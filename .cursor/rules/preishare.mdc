@@ -1,0 +1,49 @@
+---
+description: PREIshare project guidance for coding agents
+---
+
+# PREIshare project rules
+
+## Project identity
+
+- PREIshare helps people make better real-estate decisions using property and market data.
+- It is a single-package TanStack Start application.
+- Product code is primarily in `src/`; onboarding documentation is in `docs/onboarding/`.
+- Keep changes small, focused, and reviewable.
+
+## Official technology stack
+
+- React
+- TypeScript
+- TanStack Start
+- TanStack Router with file-based routes
+- Tailwind CSS
+- Vite
+
+The current scaffold has no database, authentication, Supabase, PostgreSQL, or production-data integration.
+
+## Preferred edit surfaces
+
+- Use `docs/onboarding/` for onboarding documentation.
+- Add or modify routes under `src/routes/`.
+- Add or modify shared UI in `src/components/`.
+- Use `src/styles.css` for the Tailwind CSS entry stylesheet.
+
+## Coding conventions
+
+- Preserve the existing repository structure.
+- Follow existing React and TypeScript patterns.
+- Use file-based routes under `src/routes/`.
+- Keep shared UI in `src/components/`.
+- Keep changes narrowly scoped and avoid unrelated edits.
+- Do not assume undocumented linting or formatting standards.
+
+## Safety boundaries
+
+- Do not commit or expose `.env` files, secrets, credentials, API keys, tokens, or real customer data.
+- Do not add database, authentication, Supabase, PostgreSQL, or other backend integrations without an explicit task.
+- Do not make large refactors or dependency upgrades without an explicit task and review.
+- Treat `package-lock.json`, `vite.config.ts`, `tsr.config.json`, `.cta.json`, `AGENTS.md`, and `.gitignore` as restricted files; edit them only when the task specifically requires it.
+- Do not push directly to the team repository. Work on a feature branch and open a pull request.
+- Review the diff before requesting review, and do not submit changes you cannot explain.
+- Treat failing checks as blockers, not noise.
