@@ -1,40 +1,16 @@
-# Pull request description — first PREIshare contribution
-
-**PR URL:** https://github.com/EdTechForLearning/PREIShare-org-repo/pull/4
-**Base repository:** EdTechForLearning/PREIShare-org-repo
-**Base branch:** main
-**Head repository:** matthewgarside/PREIShare-org-repo
-**Compare branch:** docs/first-contribution-matt
-**Author:** matthewgarside
-**Date opened:** 2026-09-03
+# First PREIshare contribution
 
 ## Problem
-PREIshare needed a small, reviewed onboarding contribution to demonstrate the
-Git → review → merge workflow for a new teammate.
+I need to complete the first-contribution onboarding exercise with one small, reviewable documentation change.
 
 ## Approach
-- Added a personal entry to `CONTRIBUTORS.md`.
-- Documented this pull request in `docs/onboarding/pr-description.md`.
-- Kept the change limited to documentation.
-- Used the existing onboarding plan and implementation notes.
+Added Matthew Garside (`matthewgarside`) to `CONTRIBUTORS.md` as an Onboarding engineer with the onboarding date 2026-09-03. Kept the change limited to the planned onboarding documentation and did not modify product code, configuration, dependencies, or secrets.
 
-## What reviewers should look at
-- [ ] The `CONTRIBUTORS.md` entry is accurate and matches neighboring entries.
-- [ ] The diff contains only the intended documentation files.
-- [ ] The commit message explains why this onboarding change exists.
+## Verification
 
-## Test plan
-1. Confirm the PR changes only `CONTRIBUTORS.md` and this description.
-2. Verify both files render as valid Markdown.
-3. Check the diff for secrets, tokens, passwords, and local paths.
-4. Confirm the branch and fork metadata match the live PR.
+- Reviewed the Git diff to confirm only intended onboarding files are included.
+- Ran `git diff --check`.
+- Checked the contributor entry for the correct name, GitHub handle, role, and date.
 
-## Screenshots / notes
-No UI screenshots; this is a documentation-only change.
-
-## Checklist before requesting review
-- [ ] Live PR URL has replaced the placeholder above.
-- [ ] Feature branch is pushed and up to date.
-- [ ] PR title is specific.
-- [ ] Description states the problem, approach, and test plan.
-- [ ] I can explain every changed line.
+## Risk
+This is a documentation-only change. It does not change application behavior, dependencies, configuration, or runtime code.

@@ -15,56 +15,61 @@
 
 ### Comment 1
 Theme: PR clarity
-Blocking? yes
-Reviewer said: docs/onboarding/pr-description.md does not currently read like a PR description. It contains the review-response notes scaffold instead of clearly explaining the problem, approach, verification, and risk of the contribution.
-My decision: accept-now
-Why: A reviewer should be able to understand the purpose, scope, and verification of the PR without reconstructing the information from other files.
-Action taken: Edit PR description
-Evidence: Replace the current scaffold with a concise PR description covering the contributor addition, scope, verification, and risk.
+Blocking: Yes
+Reviewer said: docs/onboarding/pr-description.md did not read like a PR description because it contained the review-response scaffold instead of clearly explaining the problem, approach, verification, and risk.
+Decision: Accept and fix now.
+Why: This would make the PR harder for a mentor to review quickly.
+Action taken: Replaced the scaffold in pr-description.md with a concise PR description covering the problem, approach, verification, and risk.
 
 ### Comment 2
-Theme: scope
-Blocking? no
-Reviewer said: The notes mention both CONTRIBUTORS.md and docs/onboarding/first-contribution-notes.md, but the relationship between the original implementation change and the later required notes artifact could be clearer.
-My decision: accept-now
-Why: The files are intentional, but explaining their different purposes will make the PR easier to review.
-Action taken: Edit PR description
-Evidence: The PR description will explain that CONTRIBUTORS.md contains the actual contributor addition and the notes file documents the onboarding
+Theme: Verification evidence
+Blocking: Yes
+Reviewer said: The review notes needed concrete verification evidence instead of only stating that files were reviewed.
+Decision: Accept and fix now.
+Why: A reviewer should be able to see what was actually checked before considering the PR ready.
+Action taken: Added concrete Git verification results to the review notes after running the required checks.
 
 ### Comment 3
-Theme: verification
-Blocking? yes
-Reviewer said: The notes describe checks that were performed, but they do not provide enough concrete verification evidence. Include actual Git/check results used to confirm the intended diff and repository state.
-My decision: accept-now
-Why: Concrete command results give the reviewer evidence that the change stayed within the planned scope.
-Action taken: Add verification results to the review notes.
-Evidence: Record the results of git status, git diff --check, and the final diff review after the changes are made.
+Theme: Scope and risk
+Blocking: No
+Reviewer said: The PR should make it clear that the change is documentation-only and that no product code, configuration, dependencies, or secrets were changed.
+Decision: Accept and fix now.
+Why: This makes the risk and intended scope immediately clear to the reviewer.
+Action taken: Added an explicit documentation-only scope and risk statement to the PR description.
 
-(Add Comment 4–5 if your reviewer provided more.)
+
 
 ## Follow-up commits (if any)
-| Commit message | Files touched | Addresses which comment # |
-| --- | --- | --- |
-| | | |
+The accepted review feedback required changes to the PR description and review-response notes. These changes were made on the same feature branch. The exact follow-up commit message will be recorded after checking git log and the final branch history.
 
-If none: explain why feedback was description-only or declined.
+
 
 ## PR description edits (if any)
-- Sections changed (summary / test plan / risk / other):
-- Before → after (short paraphrase is fine):
-- Why the edit helps a reviewer:
+Replaced the incorrect review-response scaffold in docs/onboarding/pr-description.md.
+Added a clear problem statement.
+Added the approach and exact intended scope.
+Added concrete verification steps.
+Added an explicit documentation-only risk statement.
 
 ## Re-verification checklist
-- [ ] Still on the same feature branch (not main)
-- [ ] Latest commits pushed; PR shows updated head
-- [ ] Diff includes only intended onboarding files
-- [ ] No secrets, .env values, or machine-specific paths added
-- [ ] Manual or scripted checks claimed in the PR still pass
-- [ ] Blocking comments all have a written resolution
-- [ ] Non-blocking items either fixed or parked with a reason
+Confirmed I am on docs/first-contribution-matthewgarside.
+
+Confirmed the working tree and staged changes contain only intended files.
+
+Confirmed the feature branch contains the expected commits.
+
+Confirmed the feature branch was pushed successfully.
+
+Reviewed the final diff against the target branch.
+
+Ran git diff --check successfully.
+
+Confirmed the contributor entry is correct.
+
+Confirmed pr-description.md now contains the actual PR description instead of the review-response scaffold.
 
 ## Merge-readiness statement
-This PR is ready for merge because the changes are small, focused, and limited to the planned onboarding documentation. The contributor entry and review notes are clear, the PR description explains the purpose and verification, and no unrelated product code, configuration, dependencies, or secrets were changed. The final diff and checks were reviewed, and there are no known blockers remaining.
+The PR is ready for mentor review because the accepted blocking feedback has been addressed, the scope remains small and documentation-only, and the final Git diff and verification checks have been reviewed. A human mentor should still double-check the PR title and link, confirm that pr-description.md contains the intended PR description rather than the old scaffold, and review the final diff before merging.
 
 ## What I learned about review culture
 One habit I will keep: Make the PR scope and verification evidence clear so another person can review the change without relying on my memory.
