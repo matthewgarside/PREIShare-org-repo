@@ -1,6 +1,6 @@
 # Pull request description — first PREIshare contribution
 
-**PR URL:** <!-- paste the live GitHub PR URL here -->
+**PR URL:** https://github.com/EdTechForLearning/PREIShare-org-repo/pull/4
 **Base repository:** EdTechForLearning/PREIShare-org-repo
 **Base branch:** main
 **Head repository:** matthewgarside/PREIShare-org-repo
