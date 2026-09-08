@@ -23,3 +23,6 @@
 
 - Status: Ready 
 - Incognito check of Production URL: pass 
+
+
+Testing Paul ability to check
