@@ -9,8 +9,8 @@
 | --- | --- |
 | GitHub repository (you can push) | https://github.com/matthewgarside/PREIShare-org-repo |
 | Instructor collaborator | `thortek` added: yes |
-| Vercel Production URL | https://vercel.com/info3330/prei-share-org-repo |
-| Preview URLs | https://prei-share-org-repo-five.vercel.app/ |
+| Vercel Production URL | https://prei-share-org-repo-five.vercel.app/ |
+
 
 ## Hobby constraints I will keep
 
@@ -25,4 +25,3 @@
 - Incognito check of Production URL: pass 
 
 
-Testing Paul ability to check
