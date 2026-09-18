@@ -33,7 +33,7 @@ interface InvestorListingBase {
   readonly createdAt: string;
 
   /** Date when this listing was last updated in PREIshare. */
-  updatedAt: string;
+  readonly updatedAt: string;
 
   /** Real-estate property category for the listing. */
   propertyType: PropertyType;
@@ -42,21 +42,27 @@ interface InvestorListingBase {
 type InvestorListingDraft = InvestorListingBase & {
   /** Current workflow status of the listing. */
   status: "draft";
+  closedAt?: undefined;
 };
 
 type InvestorListingActive = InvestorListingBase & {
   /** Current workflow status of the listing. */
   status: "active";
+  closedAt?: undefined;
 };
 
 type InvestorListingUnderContract = InvestorListingBase & {
   /** Current workflow status of the listing. */
   status: "under_contract";
+  closedAt?: undefined;
 };
 
 type InvestorListingClosed = InvestorListingBase & {
   /** Current workflow status of the listing. */
   status: "closed";
+
+  /** Date when the listing was closed. */
+  closedAt: string;
 };
 
 /** status is the discriminant used to determine which listing shape is valid. */
