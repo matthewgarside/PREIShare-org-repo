@@ -1,3 +1,5 @@
+import type { Address } from "./address";
+import type { FinancialSummary } from "./financial-summary";
 import type { ListingStatus } from "./listing-status";
 import type { PropertyType } from "./property-type";
 
@@ -11,8 +13,11 @@ export interface InvestorListing {
   /** Plain-language summary of the investment opportunity. */
   summary: string;
 
-  /** Asking price in whole US dollars. */
-  askingPrice: number;
+  /** Address for the property being offered. */
+  address: Address;
+
+  /** Price and financial metrics for the offering. */
+  financialSummary: FinancialSummary;
 
   /** Date when this listing was first created in PREIshare. */
   createdAt: string;
