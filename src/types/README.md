@@ -13,14 +13,19 @@ production. They will eventually help us catch problems such as:
 
 ## How to check the types
 
-After installing dependencies with `npm install`, run:
+After installing dependencies with `npm install`, run the normal TypeScript check:
 
 ```bash
 npm run typecheck
 ```
 
-This runs `tsc --noEmit`, which checks the files under `src/` without emitting
-JavaScript output files.
+This runs TypeScript in no-emit mode. A successful check exits without any
+TypeScript errors, which means the valid project files pass typechecking.
+
+The file `src/fixtures/invalid-listings.errors.ts` is intentionally excluded
+from this clean check in `tsconfig.json`. It contains invalid listing examples
+that are expected to produce errors. Those examples are kept separately to
+prove that the PREIShare types reject invalid listing data; do not fix them.
 
 ## Source of truth
 
