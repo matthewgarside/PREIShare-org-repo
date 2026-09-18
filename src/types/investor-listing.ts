@@ -1,16 +1,19 @@
 export interface InvestorListing {
   /** Unique identifier for this PREIshare listing record. */
-  listingId: string;
+  id: string;
 
   /** Short investor-facing title for the property or offering. */
-  listingTitle: string;
+  title: string;
 
   /** Plain-language summary of the investment opportunity. */
-  description: string;
+  summary: string;
+
+  /** Asking price in whole US dollars. */
+  askingPrice: number;
 
   /** Date when this listing was first created in PREIshare. */
-  createdDate: string;
+  createdAt: string;
 
-  /** Date when this listing was last updated, if available. */
-  updatedDate?: string;
+  /** Date when this listing was last updated in PREIshare. */
+  updatedAt: string;
 }
