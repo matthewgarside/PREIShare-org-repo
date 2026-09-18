@@ -1,13 +1,12 @@
 import type { Address } from "./address";
 import type { FinancialSummary } from "./financial-summary";
 import type { InvestorContact } from "./investor-contact";
-import type { ListingStatus } from "./listing-status";
 import type { Ownership } from "./ownership";
 import type { PropertyType } from "./property-type";
 
-export interface InvestorListing {
+interface InvestorListingBase {
   /** Unique identifier for this PREIshare listing record. */
-  id: string;
+  readonly id: string;
 
   /** Short investor-facing title for the property or offering. */
   title: string;
@@ -31,14 +30,38 @@ export interface InvestorListing {
   ownership: Ownership;
 
   /** Date when this listing was first created in PREIshare. */
-  createdAt: string;
+  readonly createdAt: string;
 
   /** Date when this listing was last updated in PREIshare. */
   updatedAt: string;
 
-  /** Current workflow status of the listing. */
-  status: ListingStatus;
-
   /** Real-estate property category for the listing. */
   propertyType: PropertyType;
 }
+
+type InvestorListingDraft = InvestorListingBase & {
+  /** Current workflow status of the listing. */
+  status: "draft";
+};
+
+type InvestorListingActive = InvestorListingBase & {
+  /** Current workflow status of the listing. */
+  status: "active";
+};
+
+type InvestorListingUnderContract = InvestorListingBase & {
+  /** Current workflow status of the listing. */
+  status: "under_contract";
+};
+
+type InvestorListingClosed = InvestorListingBase & {
+  /** Current workflow status of the listing. */
+  status: "closed";
+};
+
+/** status is the discriminant used to determine which listing shape is valid. */
+export type InvestorListing =
+  | InvestorListingDraft
+  | InvestorListingActive
+  | InvestorListingUnderContract
+  | InvestorListingClosed;
