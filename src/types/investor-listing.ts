@@ -1,3 +1,6 @@
+import type { ListingStatus } from "./listing-status";
+import type { PropertyType } from "./property-type";
+
 export interface InvestorListing {
   /** Unique identifier for this PREIshare listing record. */
   id: string;
@@ -16,4 +19,10 @@ export interface InvestorListing {
 
   /** Date when this listing was last updated in PREIshare. */
   updatedAt: string;
+
+  /** Current workflow status of the listing. */
+  status: ListingStatus;
+
+  /** Real-estate property category for the listing. */
+  propertyType: PropertyType;
 }
