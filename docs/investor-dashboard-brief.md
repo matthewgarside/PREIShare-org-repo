@@ -2,13 +2,14 @@
 
 ## Product summary
 
-Sprint 3 builds the PREIshare investor dashboard shell: page layout,
-navigation, file-based routes, reusable React UI components, and placeholder or
-mock content. The four areas are Home, Portfolio, Deals, and Profile.
+PREIshare members use the dashboard to scan portfolio value, browse deals, and
+review their profile. Sprint 3 builds only the dashboard shell: layout,
+navigation, file-based routes, reusable React UI components, and mock data.
+The four areas are Home, Portfolio, Deals, and Profile.
 
 The project uses React, TypeScript, TanStack Start, and TanStack Router
-file-based routes. Use mock or placeholder content for portfolio, deal, and
-activity information.
+file-based routes. Portfolio and deal content in this sprint is mock data only,
+not live data.
 
 ## Primary actors
 
@@ -49,6 +50,16 @@ the file-based routes.
 This sprint includes the dashboard layout, navigation, four file-based routes,
 reusable React UI components, and mock or placeholder content for the areas
 listed above.
+
+## Out of scope
+
+- Authentication
+- Live portfolio or deal data, database connections, or backend functionality
+- Payments
+- Admin tools
+- Notifications
+- Real financial calculations
+- Pages beyond Home, Portfolio, Deals, and Profile
 
 ## Implementation notes
 
