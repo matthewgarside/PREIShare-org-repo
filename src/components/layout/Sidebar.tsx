@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { NavItems } from './NavItems'
 
 type SidebarProps = {
   brandLabel?: string
@@ -14,12 +15,7 @@ export function Sidebar({ brandLabel = 'PREIshare', children }: SidebarProps) {
         <div className="mt-1 text-xs font-medium text-slate-500">Investor dashboard</div>
       </div>
       <nav aria-label="Dashboard">
-        <ul className="space-y-2">
-          <li><a className="block rounded px-4 py-3 text-sm text-slate-700 hover:bg-slate-100" href="/dashboard">Home</a></li>
-          <li><a className="block rounded px-4 py-3 text-sm text-slate-700 hover:bg-slate-100" href="/dashboard/portfolio">Portfolio</a></li>
-          <li><a className="block rounded px-4 py-3 text-sm text-slate-700 hover:bg-slate-100" href="/dashboard/deals">Deals</a></li>
-          <li><a className="block rounded px-4 py-3 text-sm text-slate-700 hover:bg-slate-100" href="/dashboard/profile">Profile</a></li>
-        </ul>
+        <NavItems />
         {children}
       </nav>
     </aside>
