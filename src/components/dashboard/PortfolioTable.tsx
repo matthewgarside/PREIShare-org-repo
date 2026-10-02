@@ -71,7 +71,12 @@ export function PortfolioTable({
           Sample data for demonstration only
         </p>
       </div>
-      <div className="dashboard-table-scroll mt-4 overflow-x-auto" role="region" aria-label="Portfolio holdings table" tabIndex={0}>
+      <div
+        className="dashboard-table-scroll"
+        role="region"
+        aria-label="Portfolio holdings table"
+        tabIndex={0}
+      >
         <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-[var(--line)] text-[var(--sea-ink-soft)]">
