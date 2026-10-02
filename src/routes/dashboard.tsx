@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { AppShell } from '../components/layout/AppShell'
 
 export const Route = createFileRoute('/dashboard')({
   component: DashboardLayout,
@@ -6,9 +7,8 @@ export const Route = createFileRoute('/dashboard')({
 
 function DashboardLayout() {
   return (
-    <main>
-      <h1>Dashboard</h1>
+    <AppShell title="Dashboard">
       <Outlet />
-    </main>
+    </AppShell>
   )
 }
