@@ -9,7 +9,7 @@ export const Route = createFileRoute('/dashboard/')({
 
 function DashboardHomePage() {
   return (
-    <div className="space-y-6">
+    <div className="dashboard-page space-y-6">
       <header className="space-y-2">
         <h1 className="text-2xl font-bold text-[var(--sea-ink)]">Investor dashboard</h1>
         <p className="text-sm text-[var(--sea-ink-soft)]" role="note">
@@ -19,7 +19,7 @@ function DashboardHomePage() {
 
       <section
         aria-label="Portfolio and deal metrics"
-        className="grid gap-4 sm:grid-cols-3"
+        className="dashboard-stats-grid grid gap-4 sm:grid-cols-3"
       >
         <StatsCard
           label="Total Portfolio Value"
@@ -34,7 +34,7 @@ function DashboardHomePage() {
         <StatsCard label="Open Deals" value="4" hint="Sample opportunities" />
       </section>
 
-      <div className="grid items-start gap-6 lg:grid-cols-2">
+      <div className="dashboard-overview-grid grid items-start gap-6 lg:grid-cols-2">
         <PortfolioSummary totalLabel="$300,000" />
         <RecentActivity />
       </div>

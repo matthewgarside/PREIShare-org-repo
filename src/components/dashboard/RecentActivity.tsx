@@ -40,7 +40,7 @@ export function RecentActivity({
   return (
     <section
       aria-label={title}
-      className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
+      className="dashboard-card rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-lg font-bold text-[var(--sea-ink)]">{title}</h2>

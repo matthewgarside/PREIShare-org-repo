@@ -41,7 +41,7 @@ export function DealsList({
     return (
       <section
         aria-label="Open deals"
-        className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
+        className="dashboard-card rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-bold text-[var(--sea-ink)]">Open deals</h2>
@@ -59,7 +59,7 @@ export function DealsList({
   return (
     <section
       aria-label="Open deals"
-      className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
+      className="dashboard-card rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-lg font-bold text-[var(--sea-ink)]">Open deals</h2>
@@ -71,7 +71,7 @@ export function DealsList({
         {deals.map((deal) => (
           <li
             key={deal.id}
-            className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4"
+            className="dashboard-deal-item flex flex-wrap items-center justify-between gap-x-6 gap-y-3 py-4"
           >
             <div className="min-w-0 flex-1">
               <h3 className="break-words text-sm font-semibold text-[var(--sea-ink)]">

@@ -8,7 +8,7 @@ export function NavItems() {
   })
 
   return (
-    <ul className="space-y-2">
+    <ul className="dashboard-nav-list space-y-2">
       {dashboardNavigation.map((item) => {
         const isActive = pathname === item.path
 
@@ -16,8 +16,9 @@ export function NavItems() {
           <li key={item.path}>
             <Link
               to={item.path}
+              activeOptions={{ exact: true }}
               aria-current={isActive ? 'page' : undefined}
-              className={`block rounded px-4 py-3 text-sm ${
+              className={`dashboard-nav-link block rounded px-4 py-3 text-sm ${
                 isActive
                   ? 'bg-emerald-100 font-semibold text-emerald-900'
                   : 'text-slate-700 hover:bg-slate-100'

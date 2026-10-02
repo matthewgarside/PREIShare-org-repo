@@ -45,7 +45,7 @@ export function PortfolioTable({
     return (
       <section
         aria-label="Portfolio holdings"
-        className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
+        className="dashboard-card rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-bold text-[var(--sea-ink)]">Portfolio holdings</h2>
@@ -63,7 +63,7 @@ export function PortfolioTable({
   return (
     <section
       aria-label="Portfolio holdings"
-      className="rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
+      className="dashboard-card rounded-lg border border-[var(--line)] bg-[var(--surface-strong)] p-5 shadow-sm"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-lg font-bold text-[var(--sea-ink)]">Portfolio holdings</h2>
@@ -71,7 +71,7 @@ export function PortfolioTable({
           Sample data for demonstration only
         </p>
       </div>
-      <div className="mt-4 overflow-x-auto">
+      <div className="dashboard-table-scroll mt-4 overflow-x-auto" role="region" aria-label="Portfolio holdings table" tabIndex={0}>
         <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-[var(--line)] text-[var(--sea-ink-soft)]">
