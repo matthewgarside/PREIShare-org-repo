@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { ProfileCard } from '../../components/dashboard/ProfileCard'
 
 export const Route = createFileRoute('/dashboard/profile')({
   component: ProfilePage,
@@ -6,9 +7,14 @@ export const Route = createFileRoute('/dashboard/profile')({
 
 function ProfilePage() {
   return (
-    <main>
-      <h1>Profile</h1>
-      <p>Placeholder for investor profile details.</p>
-    </main>
+    <div className="space-y-6">
+      <header className="space-y-2">
+        <h1 className="text-2xl font-bold text-[var(--sea-ink)]">Profile</h1>
+        <p className="text-sm text-[var(--sea-ink-soft)]">
+          Review your investor profile information.
+        </p>
+      </header>
+      <ProfileCard />
+    </div>
   )
 }
