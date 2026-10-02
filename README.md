@@ -1,25 +1,35 @@
 # PREIshare Investor Dashboard Shell
 
-PREIshare is being built to provide investors with a dashboard for reviewing their portfolio and available deals. This repository contains the dashboard shell; the Dashboard Home, Portfolio, Deals, and Profile routes will be added in a later step.
+PREIshare is an investor dashboard shell for viewing Home, Portfolio, Deals, and Profile pages.
 
-## Get Started
+## Prerequisites
 
-Install [Node.js](https://nodejs.org/) if it is not already installed. npm comes with Node.js. In a terminal, go to this project folder and install the project dependencies:
+Install [Node.js](https://nodejs.org/), which includes npm.
+
+## Install
 
 ```bash
 npm install
 ```
 
-Start the development server:
+## Run Locally
 
 ```bash
 npm run dev
 ```
 
-Open the local URL printed in the terminal to view the app. Leave the terminal running while you work. To stop the server, focus that terminal and press `Ctrl+C`.
+Open the local URL printed in the terminal.
 
-## Routes and Data
+## Dashboard Routes
 
-TanStack Start uses file-based routing: route files live in `src/routes/`, and TanStack uses them to create the app's routes. The four investor dashboard routes are planned for a later step and are not included yet.
+- `/dashboard`
+- `/dashboard/portfolio`
+- `/dashboard/deals`
+- `/dashboard/profile`
 
-This sprint uses mock data only. It does not include real authentication or database-backed information.
+## Project Documentation
+
+- [Sprint 3 handoff](docs/sprint3-handoff.md)
+- [Architecture decisions](docs/architecture-decisions.md)
+
+Sprint 3 uses mock/sample data. It does not yet include real authentication or live database-backed investor data.
