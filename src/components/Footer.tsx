@@ -14,9 +14,9 @@ export default function Footer() {
           href="https://x.com/tan_stack"
           target="_blank"
           rel="noreferrer"
+          aria-label="Follow TanStack on X"
           className="rounded-xl p-2 text-[var(--sea-ink-soft)] transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]"
         >
-          <span className="sr-only">Follow TanStack on X</span>
           <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32">
             <path
               fill="currentColor"
@@ -28,9 +28,9 @@ export default function Footer() {
           href="https://github.com/TanStack"
           target="_blank"
           rel="noreferrer"
+          aria-label="Go to TanStack GitHub"
           className="rounded-xl p-2 text-[var(--sea-ink-soft)] transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]"
         >
-          <span className="sr-only">Go to TanStack GitHub</span>
           <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32">
             <path
               fill="currentColor"
