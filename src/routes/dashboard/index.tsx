@@ -19,7 +19,7 @@ function DashboardHomePage() {
 
       <section
         aria-label="Portfolio and deal metrics"
-        className="dashboard-stats-grid grid gap-4 sm:grid-cols-3"
+        className="dashboard-stats-grid"
       >
         <StatsCard
           label="Total Portfolio Value"
@@ -34,7 +34,7 @@ function DashboardHomePage() {
         <StatsCard label="Open Deals" value="4" hint="Sample opportunities" />
       </section>
 
-      <div className="dashboard-overview-grid grid items-start gap-6 lg:grid-cols-2">
+      <div className="dashboard-overview-grid">
         <PortfolioSummary totalLabel="$300,000" />
         <RecentActivity />
       </div>
