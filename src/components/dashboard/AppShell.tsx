@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import { Header } from './Header'
+import { MobileNav } from './MobileNav'
+import { Sidebar } from './Sidebar'
 
 export type AppShellProps = {
   children: ReactNode
@@ -14,11 +16,10 @@ export function AppShell({ children, title }: AppShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
       <Header title={title} />
+      <MobileNav />
 
       <div className="flex min-h-0 flex-1">
-        <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white md:block" aria-label="Dashboard sidebar">
-          <div className="p-4 text-sm text-slate-400">Navigation coming soon</div>
-        </aside>
+        <Sidebar />
 
         <main className="min-w-0 flex-1 p-4 md:p-6" id="main-content">
           {children}
