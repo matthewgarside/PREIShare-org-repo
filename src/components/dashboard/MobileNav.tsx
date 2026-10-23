@@ -5,6 +5,7 @@ const navItems = [
   { label: 'Overview', to: '/dashboard' },
   { label: 'Portfolio', to: '/dashboard/portfolio' },
   { label: 'Deals', to: '/dashboard/deals' },
+  { label: 'Listings', to: '/dashboard/listings' },
   { label: 'Profile', to: '/dashboard/profile' },
 ] as const
 
@@ -34,7 +35,9 @@ export function MobileNav() {
         >
           <ul className="space-y-2">
             {navItems.map((item) => {
-              const isActive = pathname === item.to
+              const isActive =
+                pathname === item.to ||
+                (item.to !== '/dashboard' && pathname.startsWith(`${item.to}/`))
 
               return (
                 <li key={item.to}>
