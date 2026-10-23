@@ -65,35 +65,44 @@ Enable RLS on `property_listings`. Only authenticated sponsors may access
 protected listing data, and each policy checks ownership against
 `auth.uid()`:
 
-| Operation | Proposed rule |
-| --- | --- |
-| View listings | Allow an authenticated user to select rows only when `sponsor_id = auth.uid()`. There is no public listing-read policy in this sprint. |
-| Create listings | Allow an authenticated user to insert a row only when its `sponsor_id = auth.uid()`. The server should set this value from the verified session. |
-| Update listings | Not supported in this sprint. Do not add an update policy yet. |
-| Delete listings | Not supported in this sprint. Do not add a delete policy yet. |
+| Operation | Proposed ownership condition | Meaning |
+| --- | --- | --- |
+| SELECT | `USING (sponsor_id = auth.uid())` | An authenticated sponsor can view only rows they own. |
+| INSERT | `WITH CHECK (sponsor_id = auth.uid())` | A new row is allowed only when it is owned by the signed-in sponsor. |
+| UPDATE | `USING (sponsor_id = auth.uid())` and `WITH CHECK (sponsor_id = auth.uid())` | `USING` limits which existing row can be changed. `WITH CHECK` ensures the resulting row still belongs to the same signed-in sponsor. |
+| DELETE | `USING (sponsor_id = auth.uid())` | An authenticated sponsor can delete only a row they own. |
 
-These ownership checks prevent one sponsor from reading or creating a listing
-under another sponsor's account, even if they change an ID in a URL or request.
-An unauthenticated visitor has no matching authenticated identity, so they
-cannot read or create protected listing data. The sprint does not call for a
-public marketplace, listing edits, or listing deletion; those capabilities
-should not be added as policies.
+An unauthenticated user has no authenticated ID matching `auth.uid()`, so these
+policies do not allow them to view, create, update, or delete listing rows. The
+UPDATE `WITH CHECK` condition prevents a sponsor from transferring a listing
+to another sponsor by changing `sponsor_id`. The server must also take
+`sponsor_id` from the verified session, not from browser input.
+
+The requirements brief includes viewing and creating listings in the planned
+sprint, but explicitly excludes editing and deleting existing listings.
+Therefore the UPDATE and DELETE rules above describe the ownership checks to
+use if those features are approved later; they do not add those operations to
+the current sprint. Archiving changes a listing's status and is also an update,
+so it is not supported in this sprint either. Do not enable update, delete, or
+archive functionality until the scope is changed.
 
 ## 4. Server vs. Browser Operations
 
-The browser may use the public Supabase project URL and publishable key for
-sign-in UI and authenticated requests. Both are public configuration, not proof
-of permission. The browser can collect listing details and send them to the
-application, but it must not decide which sponsor owns a listing.
+The browser may use only the public Supabase project URL and publishable key.
+These values allow the app to connect to Supabase but do not grant permission
+to another sponsor's data. The browser can collect listing information and
+submit a request; it must not choose or change the listing's `sponsor_id`.
 
-TanStack Start server-side code should verify the sponsor session for protected
-pages and listing requests. It can read or create listings using the
-authenticated sponsor's identity so RLS applies. The insert's `sponsor_id`
-should come from that verified identity, not from untrusted form data.
+TanStack Start server functions or server actions should handle listing
+creation, updates, and archiving. Before any such operation, the server action
+must verify the sponsor's authenticated session. It must derive `sponsor_id`
+from that verified session, never from user-controlled browser input. Use a
+Supabase client operating with the sponsor's authenticated permissions so the
+RLS rules are enforced. The planned sprint supports listing creation; updates
+and archiving remain out of scope unless approved later.
 
-Database passwords, direct privileged database connection URLs, Supabase
-secret/service-role keys, session secrets, and other privileged operations must
-remain server-only. A service-role key can bypass RLS, so ordinary sponsor
-listing reads and creates must use the sponsor's authenticated permissions
-instead of a service-role key. Never expose a secret in browser code, a
-client-visible environment variable, or a response sent to the browser.
+Supabase secret/service-role keys, database passwords, direct privileged
+database connection URLs, session secrets, and privileged operations must
+remain server-only. A service-role key can bypass RLS and must never be used
+for normal sponsor listing operations. Never expose a secret in browser code,
+a client-visible environment variable, or a response sent to the browser.
