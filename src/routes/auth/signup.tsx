@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { establishSession } from '../../lib/auth/session'
 import { createBrowserSupabaseClient } from '../../lib/supabase/client'
 
 export const Route = createFileRoute('/auth/signup')({
@@ -30,6 +31,12 @@ function SignupPage() {
       }
 
       if (data.session) {
+        await establishSession({
+          data: {
+            accessToken: data.session.access_token,
+            refreshToken: data.session.refresh_token,
+          },
+        })
         await navigate({ to: '/dashboard' })
         return
       }
@@ -37,8 +44,12 @@ function SignupPage() {
       setSuccessMessage(
         'Check your email for a confirmation link to complete your registration.'
       )
-    } catch {
-      setErrorMessage('Unable to create your account right now. Please try again.')
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Unable to create your account right now. Please try again.'
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -106,6 +117,15 @@ function SignupPage() {
           </button>
         </form>
 
+        <p className="mt-6 text-center text-sm text-slate-600">
+          Already have an account?{' '}
+          <Link
+            className="font-medium text-indigo-700 hover:text-indigo-800"
+            to="/auth/login"
+          >
+            Log in
+          </Link>
+        </p>
       </section>
     </main>
   )

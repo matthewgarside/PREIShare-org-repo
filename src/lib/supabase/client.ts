@@ -11,5 +11,11 @@ export function createBrowserSupabaseClient() {
     )
   }
 
-  return createClient<Database>(url, publishableKey)
+  return createClient<Database>(url, publishableKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+  })
 }
