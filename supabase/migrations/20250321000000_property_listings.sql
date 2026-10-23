@@ -1,3 +1,5 @@
+begin;
+
 create table public.property_listings (
   id uuid primary key default gen_random_uuid(),
   sponsor_id uuid not null references auth.users (id),
@@ -14,7 +16,8 @@ create table public.property_listings (
   asking_price numeric(12, 2) not null
     check (asking_price >= 0),
   currency text not null,
-  status text not null,
+  status text not null
+    check (status in ('draft', 'active', 'under_contract', 'closed')),
   created_at timestamptz not null default pg_catalog.now(),
   updated_at timestamptz not null default pg_catalog.now()
 );
@@ -48,8 +51,22 @@ execute function public.set_property_listings_updated_at();
 
 alter table public.property_listings enable row level security;
 
-revoke all on table public.property_listings from public, anon;
-grant select, insert, update, delete on table public.property_listings to authenticated;
+revoke all on table public.property_listings from public, anon, authenticated;
+grant select, insert, delete on table public.property_listings to authenticated;
+grant update (
+  title,
+  summary,
+  property_type,
+  address_line1,
+  address_line2,
+  city,
+  region,
+  postal_code,
+  country,
+  asking_price,
+  currency,
+  status
+) on table public.property_listings to authenticated;
 
 create policy property_listings_select_own
   on public.property_listings
@@ -75,3 +92,5 @@ create policy property_listings_delete_own
   for delete
   to authenticated
   using (sponsor_id = auth.uid());
+
+commit;
