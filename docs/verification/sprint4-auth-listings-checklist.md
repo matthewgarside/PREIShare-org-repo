@@ -66,13 +66,18 @@ sponsor should only be able to read their own listings.
 
 | # | Test | Expected result | Actual result / evidence | Status |
 |---|---|---|---|---|
-| R1 | User A signs in and creates “Test Property A”. | The row is saved with User A's authenticated ID as `sponsor_id`. | No User A test or database row observation was provided. | NOT VERIFIED |
-| R2 | User A views “Test Property A”. | User A sees their own listing in the listings index. | No User A listings-page observation was provided. | NOT VERIFIED |
-| R3 | User B signs in using a separate browser session. | User B is a different authenticated account and does not share User A's session. | No separate-session test result was provided. | NOT VERIFIED |
-| R4 | User B opens the listings index. | User B cannot see “Test Property A” or any User A listing. | No User B isolation observation was provided. | NOT VERIFIED |
-| R5 | User B creates and views “Test Property B”. | The row is saved with User B's authenticated ID; User B can see it. | No User B creation or listing observation was provided. | NOT VERIFIED |
-| R6 | User A refreshes the listings index. | User A still sees “Test Property A” and cannot see “Test Property B”. | No return-to-User-A isolation observation was provided. | NOT VERIFIED |
+| R1 | User A signs in and creates “Test Property A”. | User A can create a listing associated with their authenticated account. | In the regular Chrome window, User A successfully signed in and created Test Property A. The server operation derives `sponsor_id` from the verified user (`src/server/listings.ts`); the reported check was through the app UI, not a separate direct database ownership query. | PASS |
+| R2 | User A views “Test Property A”. | User A sees their own listing in the listings index. | User A saw Test Property A on `/dashboard/listings` after creating it. | PASS |
+| R3 | User B signs in using a separate browser session. | User B is a different authenticated account and does not share User A's session. | User B registered and signed in with a different account in a separate Chrome Incognito window while User A used regular Chrome. Both used the same local PREIShare application. | PASS |
+| R4 | User B opens the listings index. | User B cannot see “Test Property A” or any User A listing. | User B opened `/dashboard/listings` and saw “No properties yet” instead of User A's Test Property A. | PASS |
+| R5 | User B creates and views “Test Property B”. | User B can create and view their own listing without seeing User A's listing. | User B successfully created a different property listing and could see it, while Test Property A remained absent. | PASS |
+| R6 | User A refreshes the listings index. | User A still sees “Test Property A” and cannot see User B's listing. | After refreshing the listings page in regular Chrome, User A still saw their own property and could not see User B's property. | PASS |
 | R7 | Verify the database ownership rule. | RLS policies use `auth.uid()` and `sponsor_id` to limit rows to their owner. | The migration defines owner policies comparing `sponsor_id` with `auth.uid()`. The live policies and their behavior have not been verified. | NOT VERIFIED |
+
+These UI observations support correct sponsor listing isolation between the two
+separate authenticated browser sessions. No direct database-level RLS bypass
+attempt was performed; R7 remains NOT VERIFIED until the live database policy
+and enforcement are checked.
 
 ## Environment and secret hygiene
 
