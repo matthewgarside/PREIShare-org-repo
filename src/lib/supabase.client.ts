@@ -5,19 +5,19 @@ import type { Database } from './supabase/types'
 
 function requirePublicEnv(name: string, value: string | undefined): string {
   if (!value || !value.trim()) {
-    throw new Error(`Missing required browser env ${name}. See .env.example and docs/setup/supabase-env-checklist.md.`)
+    throw new Error(`Missing required browser env ${name}. See docs/env-var-checklist.md.`)
   }
   return value
 }
 
 const supabaseUrl = requirePublicEnv('VITE_SUPABASE_URL', import.meta.env.VITE_SUPABASE_URL)
-const supabasePublishableKey = requirePublicEnv(
-  'VITE_SUPABASE_PUBLISHABLE_KEY',
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+const supabaseAnonKey = requirePublicEnv(
+  'VITE_SUPABASE_ANON_KEY',
+  import.meta.env.VITE_SUPABASE_ANON_KEY
 )
 
 export function createSupabaseBrowserClient() {
-  return createClient<Database>(supabaseUrl, supabasePublishableKey, {
+  return createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,

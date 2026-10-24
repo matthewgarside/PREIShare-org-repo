@@ -6,28 +6,35 @@ import { createServerClient as createSupabaseServerClientFactory } from '@supaba
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './supabase/types'
 
-function requirePublicEnv(name: string, value: string | undefined): string {
+function requireServerEnv(name: string, value: string | undefined): string {
   if (!value || !value.trim()) {
-    throw new Error(`Missing required server env ${name}. See .env.example and docs/setup/supabase-env-checklist.md.`)
+    throw new Error(`Missing required server env ${name}. See docs/env-var-checklist.md.`)
   }
   return value
 }
 
-function requireServerSecret(name: string, value: string | undefined): string {
+function requireServiceRoleKey(name: string, value: string | undefined): string {
   if (!value || !value.trim()) {
-    throw new Error(`Missing required server-only env ${name}. See .env.example and docs/setup/supabase-env-checklist.md.`)
+    throw new Error(`Missing required server-only env ${name}. See docs/env-var-checklist.md.`)
   }
   return value
 }
 
+/**
+ * Default server client for authenticated sponsor dashboard operations.
+ * It uses the public Supabase anon key and the current request's cookies,
+ * allowing PostgreSQL RLS to enforce sponsor ownership for property_listings.
+ * This is the correct client for normal sponsor reads and writes and must not
+ * use service-role credentials.
+ */
 export const createSupabaseServerClient = createServerOnlyFn(() => {
-  const url = requirePublicEnv('VITE_SUPABASE_URL', import.meta.env.VITE_SUPABASE_URL)
-  const publishableKey = requirePublicEnv(
-    'VITE_SUPABASE_PUBLISHABLE_KEY',
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+  const url = requireServerEnv('SUPABASE_URL', process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL)
+  const anonKey = requireServerEnv(
+    'SUPABASE_ANON_KEY',
+    process.env.SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_ANON_KEY
   )
 
-  return createSupabaseServerClientFactory<Database>(url, publishableKey, {
+  return createSupabaseServerClientFactory<Database>(url, anonKey, {
     cookies: {
       getAll() {
         return Object.entries(getCookies()).map(([name, value]) => ({
@@ -60,14 +67,18 @@ export const createSupabaseServerClient = createServerOnlyFn(() => {
 })
 
 /**
- * Privileged server-only helper for trusted admin tasks only.
- * This must never be used for normal sponsor listing operations.
+ * Privileged server-only helper for explicitly authorized administrative
+ * operations requiring elevated database privileges. Never use this client for
+ * ordinary sponsor listing work.
  */
-export function createSupabasePrivilegedClient() {
-  const url = requirePublicEnv('VITE_SUPABASE_URL', import.meta.env.VITE_SUPABASE_URL)
-  const secretKey = requireServerSecret('SUPABASE_SECRET_KEY', process.env.SUPABASE_SECRET_KEY)
+export function createSupabaseServiceRoleClient() {
+  const url = requireServerEnv('SUPABASE_URL', process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL)
+  const serviceRoleKey = requireServiceRoleKey(
+    'SUPABASE_SERVICE_ROLE_KEY',
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
 
-  return createClient<Database>(url, secretKey, {
+  return createClient<Database>(url, serviceRoleKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
