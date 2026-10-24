@@ -20,22 +20,29 @@ their listings by itself. Authentication and PostgreSQL Row Level Security
 (RLS) are still necessary to verify sponsor identity and restrict listing
 access to its owner.
 
+`SUPABASE_SECRET_KEY` is a privileged server credential equivalent to a
+Supabase service-role credential. A Supabase client authorized with this key
+can bypass PostgreSQL RLS. When an operation runs with elevated service-role
+permissions, RLS cannot be relied upon to protect sponsor listings.
+
 ## 3. Browser vs. Server Security Rules
 
 - Variables beginning with `VITE_` may be included in browser bundles. Treat
   their values as public.
-- Do not give a server-only credential the `VITE_` prefix.
-- Never import a secret key into browser components or shared modules that can
-  be included in the browser bundle.
-- Never expose a secret key through client-facing responses, including loader
-  data or API responses.
+- `SUPABASE_SECRET_KEY` must never have the `VITE_` prefix and must only be
+  read in trusted server-only code.
+- Never import the privileged key into browser components, shared React
+  components, or client-side utilities.
+- Never include the privileged key in browser bundles, API responses, or
+  client-facing logs. A browser user must never receive a credential that can
+  bypass RLS.
 - Never hardcode private credentials in JavaScript or TypeScript files.
-- Server-only code must verify authentication and authorization before
-  performing protected operations.
-- Privileged Supabase keys can bypass RLS. Do not use them for ordinary sponsor
-  listing requests.
-- Normal sponsor listing operations must use the authenticated user's
-  permissions so PostgreSQL RLS enforces listing ownership.
+- Server-side functions must verify authentication and authorization before
+  performing protected operations. Do not trust a `sponsor_id` supplied by the
+  browser; derive it from the verified sponsor session.
+- Do not use the privileged key for ordinary sponsor listing requests. Normal
+  sponsor listing operations must use the authenticated sponsor's permissions
+  so PostgreSQL RLS enforces listing ownership.
 
 ## 4. Git Security
 
