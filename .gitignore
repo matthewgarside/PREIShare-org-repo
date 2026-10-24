@@ -2,9 +2,13 @@ node_modules
 .DS_Store
 dist
 dist-ssr
-*.local
+# Ignore real environment files containing secrets
 .env
+.env.local
 .env.*
+.env.*.local
+
+# Allow the safe example environment template
 !.env.example
 .nitro
 .tanstack
