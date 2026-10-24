@@ -1,4 +1,10 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  redirect,
+  useRouterState,
+} from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { createSupabaseServerClient } from '../../lib/supabase.server'
 import type { PropertyListingRow } from '../../lib/supabase/types'
@@ -105,14 +111,29 @@ function formatAskingPrice(amount: number, currency: string): string {
 
 function PropertiesPage() {
   const { properties, error } = Route.useLoaderData()
+  const isNewPropertyRoute = useRouterState({
+    select: (state) => state.location.pathname === '/dashboard/properties/new',
+  })
+
+  if (isNewPropertyRoute) {
+    return <Outlet />
+  }
 
   return (
     <section className="space-y-6 p-6">
-      <header>
-        <h1 className="text-2xl font-semibold">My Properties</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Properties associated with your sponsor account.
-        </p>
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">My Properties</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Properties associated with your sponsor account.
+          </p>
+        </div>
+        <Link
+          to="/dashboard/properties/new"
+          className="rounded-lg bg-[var(--lagoon-deep)] px-4 py-2 text-sm font-semibold text-white no-underline transition hover:opacity-90"
+        >
+          Add Property
+        </Link>
       </header>
 
       {error ? (
