@@ -186,15 +186,53 @@ documentation does not establish production readiness.
 2. **Harden the sponsor flow.** Test sign-out, signed-out route protection,
    session persistence, invalid credentials, and the email-confirmation flow.
    These checks complete the original secure-authentication goal.
-3. **Improve listing management within approved scope.** Once the client
+3. **Add richer property listing fields (proposed).** If sponsors need more
+   detail to evaluate properties, consider fields such as square footage,
+   bedrooms, bathrooms, or additional financial details. Property photos could
+   also be considered, with storage and access requirements decided first.
+   These additions would extend the existing PostgreSQL `property_listings`
+   table and help sponsors describe and compare properties more clearly. Update
+   the database through a migration and update the TypeScript listing types and
+   validation rules together. Keep each listing associated with its
+   `sponsor_id` and protected by RLS. Supabase Auth identifies the sponsor, and
+   any protected write should go through a TanStack Start server function that
+   verifies the sponsor. Retain the separate public browser client and
+   server-only handling for secrets.
+4. **Explore a listing approval workflow (proposed future functionality).**
+   PREIshare could let a sponsor create a draft, submit it for review, and let
+   an authorized reviewer approve or reject it. The sponsor could then see the
+   listing's approval status. This could help prevent unreviewed listings from
+   becoming visible to the public or other authorized users. Supabase Auth
+   would provide identity, while PostgreSQL could store the listing status and
+   any review information the team approves. Reviewer permissions do not
+   currently exist: stakeholders would need to define reviewer roles and
+   visibility rules, then design RLS to distinguish sponsor actions from
+   reviewer actions. TanStack Start server functions must verify reviewer
+   permissions and enforce allowed status changes; never trust an approval
+   decision sent by the browser. Keep privileged operations and secret keys on
+   the server, and use authenticated permissions so RLS remains effective.
+5. **Explore pgvector property search (proposed future enhancement).** If users
+   need to find listings by meaning or similarity, a later sprint could
+   evaluate PostgreSQL's `pgvector` extension and store or compare listing
+   embeddings during search. For example, a user could search for properties
+   similar to a description rather than matching only exact words. A migration
+   and appropriate TypeScript types would be needed. This would build on the
+   existing PostgreSQL listings, not replace them. Supabase Auth should
+   identify the user, and RLS must still restrict which listings that user is
+   allowed to search or receive. Use a protected TanStack Start server function
+   with the user's authenticated permissions. If an external service is
+   selected to generate embeddings, its API key and embedding operations must
+   remain server-only; preserve the separate public browser and server-only
+   clients. pgvector search and embeddings are not implemented in Sprint 4.
+6. **Improve listing management within approved scope.** Once the client
    confirms requirements, consider editing or archiving listings; the current
    requirements exclude editing and deleting, and archiving is an update.
-   Improve search/filtering only after confirming that sponsors need it.
-4. **Connect remaining dashboard data to real records where required.**
+   Improve search and filtering only after confirming that sponsors need it.
+7. **Connect remaining dashboard data to real records where required.**
    The requirements brief describes existing investor demo data as mock data,
    so stakeholders should decide whether and when those areas should use
    persisted data rather than implying they already do.
-5. **Prepare deployment securely.** Verify provider-side environment
+8. **Prepare deployment securely.** Verify provider-side environment
    configuration, restore and test email confirmation, and ensure normal
    sponsor operations continue to enforce RLS. Do not expose secret values
    while checking configuration.
