@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { createClientOnlyFn } from '@tanstack/react-start'
 import { signOut } from '../../lib/auth/session'
+import { supabaseBrowser } from '../../lib/supabase.client'
+
+const getBrowserSupabase = createClientOnlyFn(() => supabaseBrowser)
 
 export type HeaderProps = {
   /** Page or dashboard title shown in the header. */
@@ -11,14 +15,23 @@ export type HeaderProps = {
 export function Header({ title = 'Dashboard' }: HeaderProps) {
   const navigate = useNavigate()
   const [errorMessage, setErrorMessage] = useState('')
+  const [isSigningOut, setIsSigningOut] = useState(false)
 
   async function handleSignOut() {
     setErrorMessage('')
+    setIsSigningOut(true)
     try {
+      const { error } = await getBrowserSupabase().auth.signOut({ scope: 'local' })
+      if (error) {
+        throw error
+      }
+
       await signOut()
-      await navigate({ to: '/auth/login' })
+      await navigate({ to: '/login' })
     } catch {
       setErrorMessage('Unable to sign out. Please try again.')
+    } finally {
+      setIsSigningOut(false)
     }
   }
 
@@ -51,10 +64,11 @@ export function Header({ title = 'Dashboard' }: HeaderProps) {
         )}
         <button
           className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          disabled={isSigningOut}
           onClick={handleSignOut}
           type="button"
         >
-          Sign out
+          {isSigningOut ? 'Signing out…' : 'Sign Out'}
         </button>
       </div>
     </header>

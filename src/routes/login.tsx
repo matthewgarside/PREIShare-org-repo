@@ -1,7 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createClientOnlyFn } from '@tanstack/react-start'
 import { establishSession } from '../lib/auth/session'
-import { createBrowserSupabaseClient } from '../lib/supabase/client'
+import { supabaseBrowser } from '../lib/supabase.client'
+
+const getBrowserSupabase = createClientOnlyFn(() => supabaseBrowser)
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
@@ -29,8 +32,7 @@ function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      const supabase = createBrowserSupabaseClient()
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await getBrowserSupabase().auth.signInWithPassword({
         email: trimmedEmail,
         password: enteredPassword,
       })
