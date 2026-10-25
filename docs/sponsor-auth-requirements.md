@@ -139,12 +139,15 @@ The documented Supabase environment variable names are:
 | Variable | Visibility | Use |
 | --- | --- | --- |
 | `VITE_SUPABASE_URL` | Public | Supabase project URL; safe for browser configuration. |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Public | Supabase publishable key; safe for browser configuration, but not authorization by itself. |
-| `SUPABASE_SECRET_KEY` | Server-only | Privileged key; keep out of browser code and responses. |
+| `VITE_SUPABASE_ANON_KEY` | Public | Supabase anon key; safe for browser configuration, but not authorization by itself. |
+| `SUPABASE_URL` | Server runtime setting | Optional server-side URL override; falls back to `VITE_SUPABASE_URL`. |
+| `SUPABASE_ANON_KEY` | Server runtime setting | Optional server-side anon-key override; falls back to `VITE_SUPABASE_ANON_KEY`. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only | Privileged key; keep out of browser code and responses. |
 
-The `VITE_` variables are exposed to browser code by Vite. `SUPABASE_SECRET_KEY`
-must not use the `VITE_` prefix and must only be read in trusted server-side
-code if it is needed. Never put real values in this document.
+The `VITE_` variables are exposed to browser code by Vite.
+`SUPABASE_SERVICE_ROLE_KEY` must not use the `VITE_` prefix and must only be
+read in trusted server-side code if it is needed. Never put real values in
+this document.
 
 Normal sponsor listing requests should use the sponsor's authenticated
 permissions so PostgreSQL RLS applies. Do not use a service-role key to perform

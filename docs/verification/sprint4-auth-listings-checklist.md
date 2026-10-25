@@ -82,14 +82,16 @@ and enforcement are checked.
 ## Environment and secret hygiene
 
 No real `.env` files were opened, and no credential values are recorded here.
-The project's documented public variable names are
-`VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. The documented
-server-only variable name is `SUPABASE_SECRET_KEY`.
+This historical verification record used the environment-variable names
+documented at that time. The current contract is `VITE_SUPABASE_URL`,
+`VITE_SUPABASE_ANON_KEY`, optional server overrides `SUPABASE_URL` and
+`SUPABASE_ANON_KEY`, and server-only `SUPABASE_SERVICE_ROLE_KEY`. See the
+current `docs/security-verification-checklist.md` for the retest.
 
 | # | Check | Expected result | Actual result / evidence | Status |
 |---|---|---|---|---|
-| S1 | Check public Supabase variable names. | Browser-facing configuration uses `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. | `.env.example`, the browser client, and the server client use those public variable names. | PASS |
-| S2 | Check the entire project for privileged key use and browser exposure. | Privileged credentials are only used by trusted server-side code and never imported into browser-facing code. | Read-only whole-project searches found no service-role or `SUPABASE_SECRET_KEY` use in application code and no server-client import in `src/routes` or `src/components`. The reviewed server listing path uses the public Supabase client with the authenticated user. No deployment settings were available to inspect. | PASS |
+| S1 | Check public Supabase variable names (historical configuration). | Browser-facing configuration uses the public Supabase URL and anon-key contract. | At the time of the earlier review, `.env.example` and the inspected client/server modules used the public project URL and public key. The variable contract has since been standardized; see the current security checklist's E11 result. | PASS |
+| S2 | Check the entire project for privileged key use and browser exposure. | Privileged credentials are only used by trusted server-side code and never imported into browser-facing code. | The earlier read-only searches did not find privileged-key use or server-client imports in routes/components at that time. The current build bundle scan and source review are recorded separately in the current security checklist. | PASS |
 | S3 | Check browser components for imports of privileged server clients. | Browser-facing components do not import privileged server-only Supabase clients. | A read-only search of `src/routes` and `src/components` found no server Supabase client imports; reviewed routes use the browser client or server functions. | PASS |
 | S4 | Search the whole project for hardcoded service-role keys, private API keys, and database credentials. | No real privileged keys or database passwords are present in project files. | Filename-only scans of non-environment working-tree files found no matches for common Supabase secret, service-role, JWT, cloud-key, or credential-bearing PostgreSQL URL formats. Real `.env` files were deliberately excluded and not read. No matching value or credential was displayed. This is a pattern-based check, not proof against every possible secret format. | PASS |
 | S5 | Check whether real environment files are excluded from Git. | Real `.env` files are ignored and are not tracked. | `git check-ignore` matched `.env`, `.env.local`, and `.env.production`. The only environment-related tracked/unignored path reported was `.env.example`. | PASS |

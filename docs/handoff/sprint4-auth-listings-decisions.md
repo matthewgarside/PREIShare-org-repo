@@ -87,7 +87,7 @@ they should not use a service-role key that bypasses RLS.
 ### Browser, server, and mock data
 
 The documented browser configuration is the public Supabase project URL and
-publishable key. Server-side code verifies identity and handles trusted
+anon key (`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`). Server-side code verifies identity and handles trusted
 operations. The checklist's source review says the listing server path uses
 the public Supabase client with the authenticated user's identity; it does not
 report a service-role key being used for these operations. The public key is
@@ -107,8 +107,8 @@ data as real sponsor listing data.
    real credentials into source files or documentation.
 4. Create a local `.env.local` or `.env` from `.env.example`, then fill in
    the values from the intended Supabase project.
-5. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as public
-   variables. Keep `SUPABASE_SECRET_KEY` server-only if it is required by the
+5. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as public
+   variables. Keep `SUPABASE_SERVICE_ROLE_KEY` server-only if it is required by the
    server configuration; the checklist reports no use of it in application
    code at the time of review.
 6. Using the team's approved Supabase workflow, apply the property-listings
@@ -126,8 +126,10 @@ The documented variable names are:
 | Variable | Visibility |
 | --- | --- |
 | `VITE_SUPABASE_URL` | Public; may be used by browser code. |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Public; may be used by browser code. |
-| `SUPABASE_SECRET_KEY` | Server-only; never expose in browser code or responses. |
+| `VITE_SUPABASE_ANON_KEY` | Public; may be used by browser code. |
+| `SUPABASE_URL` | Optional server-side URL override. |
+| `SUPABASE_ANON_KEY` | Optional server-side anon-key override. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only; never expose in browser code or responses. |
 
 The public variables do not grant permission to another sponsor's records.
 Database passwords, privileged connection URLs, secret/service-role keys, and
