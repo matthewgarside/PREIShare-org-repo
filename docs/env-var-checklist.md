@@ -12,25 +12,27 @@ authentication and PostgreSQL property listings.
 | Variable Name | Classification | Purpose | Where It Can Be Used |
 | --- | --- | --- | --- |
 | `VITE_SUPABASE_URL` | Public / Client-safe | Identifies the Supabase project URL. | Browser and server configuration where appropriate. |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Public / Client-safe | Initializes the public Supabase client. | Browser and server configuration where appropriate. |
-| `SUPABASE_SECRET_KEY` | Private / Server-only | Provides privileged access for trusted server-side operations, if required. | Trusted server-side code only. |
+| `VITE_SUPABASE_ANON_KEY` | Public / Client-safe | Initializes the browser Supabase client; this key does not grant sponsor authorization by itself. | Browser and server configuration where appropriate. |
+| `SUPABASE_URL` | Server runtime setting | Optional server-side override for the project URL. If unset, the server can use `VITE_SUPABASE_URL`. | Trusted server-side code only. |
+| `SUPABASE_ANON_KEY` | Server runtime setting (public credential) | Optional server-side override for the anon key. If unset, the server can use `VITE_SUPABASE_ANON_KEY`. | Trusted server-side code only. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Private / Server-only | Privileged access for explicitly authorized administrative operations, if required. | Trusted server-side code only. |
 
 Public Supabase configuration does not authenticate a user or grant access to
 their listings by itself. Authentication and PostgreSQL Row Level Security
 (RLS) are still necessary to verify sponsor identity and restrict listing
 access to its owner.
 
-`SUPABASE_SECRET_KEY` is a privileged server credential equivalent to a
-Supabase service-role credential. A Supabase client authorized with this key
-can bypass PostgreSQL RLS. When an operation runs with elevated service-role
-permissions, RLS cannot be relied upon to protect sponsor listings.
+`SUPABASE_SERVICE_ROLE_KEY` is a privileged credential. A Supabase client
+authorized with this key can bypass PostgreSQL RLS. When an operation runs
+with elevated service-role permissions, RLS cannot be relied upon to protect
+sponsor listings.
 
 ## 3. Browser vs. Server Security Rules
 
 - Variables beginning with `VITE_` may be included in browser bundles. Treat
   their values as public.
-- `SUPABASE_SECRET_KEY` must never have the `VITE_` prefix and must only be
-  read in trusted server-only code.
+- `SUPABASE_SERVICE_ROLE_KEY` must never have the `VITE_` prefix and must
+  only be read in trusted server-only code.
 - Never import the privileged key into browser components, shared React
   components, or client-side utilities.
 - Never include the privileged key in browser bundles, API responses, or
@@ -62,6 +64,9 @@ permissions, RLS cannot be relied upon to protect sponsor listings.
 - [ ] Add real values only to the local file, and do not commit it.
 - [ ] Keep private credentials server-only and never use the `VITE_` prefix
   for them.
+- [ ] Set `SUPABASE_URL` and `SUPABASE_ANON_KEY` only when server-side
+  overrides are needed; otherwise the server uses the matching public Vite
+  variables.
 - [ ] Confirm `.gitignore` protects real environment files and allows
   `.env.example`.
 - [ ] Check that browser code and client-facing responses do not expose server
@@ -79,8 +84,9 @@ passed.
    confirm it has generic example values, not real project identifiers,
    credentials, or JWT-like tokens.
 2. **Check private variable names.** Confirm no private variable uses the
-   `VITE_` prefix. In particular, `SUPABASE_SECRET_KEY` must remain
-   unprefixed.
+   `VITE_` prefix. In particular, `SUPABASE_SERVICE_ROLE_KEY` must remain
+   unprefixed. `SUPABASE_URL` and `SUPABASE_ANON_KEY` are optional
+   server-side overrides; the browser uses the `VITE_` public variables.
 3. **Check Git ignore and tracked-file status.** Run
    `git check-ignore -v .env .env.local .env.development .env.production .env.production.local`
    and confirm the real environment paths are ignored. Confirm
@@ -91,8 +97,8 @@ passed.
    private credentials and confirm no server-only credential is included.
    Do not put real secret values into search commands, logs, or reports.
 5. **Check shared React code.** Search shared components and routes for
-   `SUPABASE_SECRET_KEY` and other server-only credentials; they should not be
-   referenced there.
+   `SUPABASE_SERVICE_ROLE_KEY` and other server-only credentials; they should
+   not be referenced there.
 6. **Check authenticated listing access and RLS.** Using separate sponsor
    accounts, verify that each account can access its own listings but cannot
    access another sponsor's listings. Confirm normal listing requests use the

@@ -71,7 +71,7 @@ export const createSupabaseServerClient = createServerOnlyFn(() => {
  * operations requiring elevated database privileges. Never use this client for
  * ordinary sponsor listing work.
  */
-export function createSupabaseServiceRoleClient() {
+export const createSupabaseServiceRoleClient = createServerOnlyFn(() => {
   const url = requireServerEnv('SUPABASE_URL', process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL)
   const serviceRoleKey = requireServiceRoleKey(
     'SUPABASE_SERVICE_ROLE_KEY',
@@ -84,4 +84,4 @@ export function createSupabaseServiceRoleClient() {
       autoRefreshToken: false,
     },
   })
-}
+})

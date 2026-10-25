@@ -3,15 +3,15 @@ import type { Database } from './types'
 
 export function createBrowserSupabaseClient() {
   const url = import.meta.env.VITE_SUPABASE_URL
-  const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-  if (!url || !publishableKey) {
+  if (!url || !anonKey) {
     throw new Error(
-      'Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY. See docs/setup/supabase-env-checklist.md'
+      'Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. See docs/env-var-checklist.md'
     )
   }
 
-  return createClient<Database>(url, publishableKey, {
+  return createClient<Database>(url, anonKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,

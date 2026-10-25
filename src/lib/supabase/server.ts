@@ -8,16 +8,16 @@ import { createServerClient as createSupabaseServerClient } from '@supabase/ssr'
 import type { Database } from './types'
 
 export const createServerClient = createServerOnlyFn(() => {
-  const url = import.meta.env.VITE_SUPABASE_URL
-  const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+  const url = process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL
+  const anonKey = process.env.SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_ANON_KEY
 
-  if (!url || !publishableKey) {
+  if (!url || !anonKey) {
     throw new Error(
-      'Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY. See docs/setup/supabase-env-checklist.md'
+      'Missing SUPABASE_URL or SUPABASE_ANON_KEY (or their VITE_ public fallbacks). See docs/env-var-checklist.md'
     )
   }
 
-  return createSupabaseServerClient<Database>(url, publishableKey, {
+  return createSupabaseServerClient<Database>(url, anonKey, {
     cookies: {
       getAll() {
         return Object.entries(getCookies()).map(([name, value]) => ({
