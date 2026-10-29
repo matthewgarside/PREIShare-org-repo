@@ -14,16 +14,17 @@ application code.
 
 ## Overview
 PREIShare stores regular property information, such as a title, summary, city,
-and asking price, in the `property_listings` table. The plan is to add an
+and asking price, in the `public.property_listings` table. The plan is to add an
 embedding that represents the meaning of the property's title and summary.
 The original text stays available to show investors, while the separate
 embedding can help compare a search query with listings that use different
 words.
 
-The embedding model generates the number list from text. PostgreSQL with
-pgvector stores the list; the database does not generate it by itself. The
-current project schema already includes property listing fields, but it does
-not yet include an embedding column.
+The selected embedding model is OpenAI's `text-embedding-3-small`. It generates
+the number list from text. PostgreSQL with pgvector stores the list; the
+database does not generate it by itself. The current project schema already
+includes property listing fields, but it does not yet include an embedding
+column.
 
 ## Identifiers
 | Field | Type (logical) | Required | Status | Notes |
@@ -34,7 +35,7 @@ Every embedding must stay associated with the correct property through this
 identifier.
 
 ## Core listing fields (this tutorial slice)
-The existing table is named `property_listings`. The fields marked **Existing**
+The existing table is named `public.property_listings`. The fields marked **Existing**
 are in the current migration. **Proposed** marks the new field planned for
 semantic search. The schema documentation uses `summary`, not a separate
 `description` column; here, summary is the written property description.
@@ -45,7 +46,7 @@ semantic search. The schema documentation uses `summary`, not a separate
 | `summary` | Text | Yes | Existing | Written property description and part of the text used to represent its meaning. |
 | `city` | Text | Yes | Existing | The city where the property is located. |
 | `asking_price` | Number (`numeric(12,2)` in the current schema) | Yes | Existing | The property's listed asking price. |
-| `embedding` | Fixed-length vector of numbers | Temporarily optional; intended to be required for listings eligible for semantic search after backfill | Proposed | Stores the embedding generated from the property's title and summary. |
+| `embedding` | `vector(1536)` | Temporarily optional; intended to be required for listings eligible for semantic search after backfill | Proposed | Stores the 1536-dimensional embedding generated from the property's title and summary. |
 | `sponsor_id` | UUID | Yes | Existing | Identifies the sponsor associated with the listing; access rules still apply. |
 | `property_type` | Text with allowed values | Yes | Existing | Describes the listing category, such as `single_family` or `land`. |
 | `address_line1` | Text | Yes | Existing | Street address for the listing. |
@@ -84,21 +85,20 @@ search. The exact update process is for a later lesson.
 ## Embedding column
 | Field | Type (logical) | Required | Notes |
 |-------|----------------|----------|-------|
-| `embedding` | `vector(DIMENSION_TODO)` using pgvector | Temporarily optional during backfill; intended to be required for listings eligible for semantic search afterward | A fixed-length list of numbers generated from the property's title and summary. It is stored separately from the original text. |
+| `embedding` | `vector(1536)` using pgvector | Temporarily optional during backfill; intended to be required for listings eligible for semantic search afterward | A fixed-length, 1536-number list generated from the property's title and summary. It is stored separately from the original text. |
 
 PostgreSQL can store this vector using pgvector. Every vector compared in a
-search must use a compatible representation. The vector length must match the
-embedding model selected later, and the query and property vectors must be
-compatible with each other. No model has been chosen; the size remains
-`DIMENSION_TODO` until a later lesson.
+search must use a compatible representation. `text-embedding-3-small`
+produces 1536-dimensional embeddings by default. Both property descriptions
+(the title and summary together) and investor queries must use the same model
+and dimension settings so their vectors can be compared.
 
-### Dimension placeholder
-- The vector size is written as **DIMENSION_TODO** until a later lesson chooses
-  the embedding model and confirms its output size.
-- Embeddings being compared must have compatible representations and the same
-  vector length, **DIMENSION_TODO**.
-- Do not replace the placeholder with a real size or choose a model in this
-  lesson.
+### Dimension
+- The selected model, `text-embedding-3-small`, produces 1536-dimensional
+  embeddings by default.
+- The planned PostgreSQL column type is `vector(1536)`.
+- Property and query embeddings must use compatible model and dimension
+  settings.
 
 ### Nullability and backfill
 - The existing property listing schema has not yet been given an embedding
@@ -117,7 +117,7 @@ compatible with each other. No model has been chosen; the size remains
 |---------|----------------|
 | Human-readable listing information | Existing columns such as `title`, `summary`, `city`, and `asking_price` |
 | Meaning used for search | Proposed `embedding` vector column |
-| Embedding generation | An embedding model, chosen in a later lesson |
+| Embedding generation | OpenAI `text-embedding-3-small`, using its default 1536 dimensions |
 | Embedding storage | PostgreSQL with pgvector, once implemented |
 
 The vector does not replace the title or summary. Investors need the original
@@ -149,16 +149,12 @@ implementation lessons in the semantic search tutorial.
 - [ ] Existing field names and required/optional rules match the current schema.
 - [ ] Primary key and property-to-embedding relationship are clear.
 - [ ] Embedding input text uses the title and summary.
-- [ ] The `DIMENSION_TODO` placeholder is used consistently without choosing a
-  model or real vector size.
+- [ ] `text-embedding-3-small` and its 1536 dimensions are used consistently.
 - [ ] Original text and the proposed vector are separate.
 - [ ] Temporary backfill and intended final nullability rules are stated.
 - [ ] Out-of-scope work is listed for this design lesson.
 
 ## Open questions
-- Which embedding model will PREIShare use?
-- How many dimensions will the model produce?
-- Which vector distance or similarity metric should we use?
 - How will property embeddings be generated?
 - How will existing properties receive embeddings?
 - When should an embedding be updated after a listing changes?
