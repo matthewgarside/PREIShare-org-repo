@@ -54,26 +54,32 @@ listing wording does not need to repeat the search phrase.
 
 ## In-Scope Work
 
-- Describe the expected search behavior for investors using everyday language.
-- Find and show property listings that match the meaning of a search, even
-  when the listing uses different words.
-- Check the behavior with a small set of sample listings and the example
-  queries in this document.
-- Keep results focused on relevant property listings rather than promising
-  investment performance.
+- Understand what embeddings are and how they help a search match the meaning
+  of an investor's query.
+- Learn how pgvector stores embeddings in PostgreSQL for semantic search.
+- Prepare a small set of sample property listings to check search behavior.
+- Use vector similarity search to find listings relevant to a natural-language
+  query, including listings that use different wording.
+- Provide a minimal API for submitting search queries and returning matching
+  property listings.
+- Provide a simple search page where investors can enter natural-language
+  queries and view matching listings.
+- Verify that searches return relevant results and document the work for
+  handoff.
 
 ## Out-of-Scope Work
 
-- Building a complete recommendation system that predicts what an investor
-  might want beyond the search they entered.
-- Redesigning the PREIShare application.
-- Adding unrelated features such as investment transactions, messaging, or
-  account management as part of this search requirement.
-- Choosing or documenting a specific technical implementation. This document
-  describes expected behavior, not how the search is built.
+- Interactive maps and location-based map features.
+- Changes to authentication or authorization.
+- Payment processing.
+- Generating, updating, and managing embeddings at production scale.
+- Advanced ranking algorithms and personalized recommendations.
 
 ## Open Questions
 
+- The embedding model, number of dimensions for the embedding vectors, and
+  vector distance or similarity metric will be decided in later lessons. No
+  specific choices are made in this requirements document.
 - Which sample listings will be used to check the example queries?
 - Who will review the results and agree whether a sample listing is relevant?
 - How should results be ordered when several listings seem equally relevant?
