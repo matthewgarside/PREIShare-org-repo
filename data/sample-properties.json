@@ -1,0 +1,52 @@
+{
+  "properties": [
+    {
+      "title": "Lakeside Wooden Retreat",
+      "description": "This quiet wooden vacation home sits among mature trees beside a clear lake. Guests can step from the private shoreline into the water and spend evenings enjoying peaceful views from the deck.",
+      "location": "Bayfield, Wisconsin",
+      "price_usd": 389000
+    },
+    {
+      "title": "Downtown City Loft",
+      "description": "This modern loft is in the center of a lively city neighborhood. Restaurants, independent shops, and public plazas are all nearby, making it a convenient home for someone who enjoys urban activity.",
+      "location": "Madison, Wisconsin",
+      "price_usd": 425000
+    },
+    {
+      "title": "Suburban Family Home",
+      "description": "This spacious four-bedroom home has a fenced backyard, a flexible dining area, and room for a growing family. Local schools and neighborhood parks are a short drive away, while quiet residential streets surround the property.",
+      "location": "Eden Prairie, Minnesota",
+      "price_usd": 548000
+    },
+    {
+      "title": "Rental Income Duplex",
+      "description": "This well-maintained duplex contains two separate residential units, each with its own kitchen and living space. The layout gives an owner the option to rent both homes or live in one while earning rent from the other.",
+      "location": "Duluth, Minnesota",
+      "price_usd": 362000
+    },
+    {
+      "title": "Waterfront Vacation Cottage",
+      "description": "This small vacation cottage is close to the water and has a covered porch for relaxing after a day outdoors. Nearby trails and public launch points make it easy to enjoy paddling, fishing, and other seasonal recreation.",
+      "location": "Hayward, Wisconsin",
+      "price_usd": 279000
+    },
+    {
+      "title": "Transit-Friendly Condo",
+      "description": "This bright one-bedroom condo has large windows and a compact, easy-to-maintain layout. A light-rail station is within walking distance, with grocery stores and everyday services along the route.",
+      "location": "Minneapolis, Minnesota",
+      "price_usd": 315000
+    },
+    {
+      "title": "Downtown Nightlife Apartment",
+      "description": "This energetic city apartment sits above a street filled with late-night entertainment, music venues, and busy restaurants. The neighborhood stays active well into the evening, so it is a poor choice for anyone seeking a quiet waterfront retreat.",
+      "location": "Milwaukee, Wisconsin",
+      "price_usd": 337000
+    },
+    {
+      "title": "Rural Farmhouse",
+      "description": "This peaceful country farmhouse is surrounded by open fields and working farmland. Its spacious yard and quiet setting offer a slower pace of life, but there is no waterfront access on the property or nearby.",
+      "location": "Decorah, Iowa",
+      "price_usd": 296000
+    }
+  ]
+}
