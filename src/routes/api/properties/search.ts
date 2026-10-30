@@ -1,13 +1,11 @@
-import { createFileRoute, type FileRoutesByPath } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { searchProperties } from '../../../lib/property-search'
 
 const DEFAULT_MATCH_COUNT = 5
 const MAX_MATCH_COUNT = 20
 const MAX_QUERY_LENGTH = 500 // Keep natural-language prompts bounded.
 
-export const Route = createFileRoute(
-  '/api/properties/search' as keyof FileRoutesByPath,
-)({
+export const Route = createFileRoute('/api/properties/search')({
   server: {
     handlers: {
       GET: async ({ request }) => {

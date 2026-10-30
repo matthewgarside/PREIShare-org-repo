@@ -1,7 +1,7 @@
-import { createFileRoute, type FileRoutesByPath } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState, type FormEvent } from 'react'
 
-export const Route = createFileRoute('/search' as keyof FileRoutesByPath)({
+export const Route = createFileRoute('/search')({
   component: PropertySearchPage,
 })
 
