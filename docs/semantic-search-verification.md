@@ -19,10 +19,12 @@ separates them from tests blocked by the current local and database setup.
   returns the SQL results without reordering them, and the page displays the
   returned distance.
 - `npm run typecheck` passed.
-- I started the local development server. Port 3000 was already occupied, so
-  Vite started this instance at `http://localhost:3001`.
-- The browser opened `/search` and displayed the search form. The page request
-  returned HTTP 200.
+- The active local development server responded on port 3000 during this
+  verification. `/search` loaded in the browser with HTTP 200.
+- `/auth/login` also returned HTTP 200 and displayed the sponsor login form.
+  The login route uses Supabase password sign-in and passes the returned
+  session to the server session helper. No credentials were entered, so a
+  signed-in session has not been verified.
 - Configuration presence was checked without printing values:
   `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` were configured. The
   server-side `OPENAI_API_KEY` was missing. The application can use the Vite
@@ -31,6 +33,10 @@ separates them from tests blocked by the current local and database setup.
 - The expected Supabase project could not be independently confirmed because
   no expected project identifier is documented in the checked files. No
   credential values were printed or recorded.
+- A read-only REST request to the configured endpoint returned HTTP 404 with
+  `PGRST205` for `public.properties`. This proves the configured endpoint did
+  not expose that table in its schema cache; it does not distinguish a wrong
+  project from an unapplied migration or an unexposed schema.
 - No migration, seed script, database write, or OpenAI embedding request was
   performed.
 
@@ -131,11 +137,19 @@ issue could not be confirmed by an authenticated runtime call.
 embedding configuration. Then record original ranking results before deciding
 on a ranking refinement.
 
+**Migration history caution:** Two files use the `20250321000000` migration
+version: `20250321000000_property_listings.sql` and
+`20250321000000_sponsors_properties_rls.sql`. The latter labels itself an
+assignment-only draft and says not to apply it as-is. The version collision
+must be resolved before treating the full migration history as safe to apply.
+No migrations were applied.
+
 ## API and UI Verification
 
 | Check | Actual observation | Result |
 |---|---|---|
-| `/search` route | Browser opened `http://localhost:3001/search`; page showed “Search Properties” and the search form. | PASS for local route loading |
+| `/search` route | Browser opened `http://localhost:3000/search`; page showed “Search Properties” and the search form. | PASS for local route loading |
+| `/auth/login` route | Browser opened `http://localhost:3000/auth/login`; the sponsor login form rendered. | PASS for login page loading; authentication itself NOT VERIFIED |
 | Empty query in UI | Clicking Search with a blank input displayed “Enter a description of the property you want to find.” | PASS for client-side validation |
 | Empty API query | `GET /api/properties/search?q=` returned HTTP 400. | PASS |
 | Invalid API limit | `GET /api/properties/search?q=test&limit=0` returned HTTP 400. | PASS |
@@ -145,13 +159,11 @@ on a ranking refinement.
 | UI empty-results state | No successful API response with an empty result list was available. | NOT VERIFIED |
 | UI successful-results state and ordering | No successful API response was available. | BLOCKED |
 
-The source route files and generated route tree both include `/search` and
-`/api/properties/search`. No obvious route import or registration error was
-found. The earlier “Not Found” did not reproduce on the local server at port
-3001. Since port 3000 was already occupied, the earlier error may have come
-from a different or stale server, but that cause was not confirmed. The
-“Crawling result not available” message was not reproduced and cannot be
-diagnosed from this evidence.
+The source route files and generated route tree both include `/search`,
+`/auth/login`, and `/api/properties/search`. No obvious route import or
+registration error was found. The earlier “Not Found” did not reproduce on
+the current local server at port 3000. The “Crawling result not available”
+message was not reproduced and cannot be diagnosed from this evidence.
 
 ## Requirements Assessment
 
@@ -182,6 +194,9 @@ diagnosed from this evidence.
   `match_properties`. This is a source-level permission conflict; the deployed
   RPC permissions could not be tested because the request was unauthenticated
   and the table was not found in the schema cache.
+- The two `20250321000000` migration files have a version collision, and one
+  identifies itself as an assignment-only draft. Do not apply the full
+  migration history until this conflict is resolved.
 - The data model document and search implementation use different table and
   description-field names (`property_listings`/`summary` versus
   `properties`/`description`). Confirm the intended schema.
@@ -202,9 +217,11 @@ missing. Therefore, database readiness, semantic rankings, the keyword-trap
 outcome, and a live refinement cycle are still blocked; semantic search has
 not been shown to pass end-to-end.
 
-To continue, confirm locally that the intended Supabase project is configured,
-make the expected `public.properties` schema and sample embeddings available
-there, agree on safe RPC/table permissions, sign in with a local test account,
-and configure the server-side `OPENAI_API_KEY` without sharing its value.
-Then rerun the documented queries and add their real top-three titles and
-cosine distances before treating this verification as complete.
+To continue, confirm locally that the intended Supabase project is configured
+and determine why `public.properties` is not exposed. Resolve the migration
+version collision before applying migrations; confirm the correct schema and
+agree on safe RPC/table permissions before enabling search. Sign in with a
+local test account and configure the server-side `OPENAI_API_KEY` without
+sharing its value. Then rerun the documented queries and add their real
+top-three titles and cosine distances before treating this verification as
+complete.

@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { createClient } from "@supabase/supabase-js";
-import { generatePropertyEmbedding } from "../src/lib/embeddings/generate";
 import { EMBEDDING_DIMENSION } from "../src/lib/embeddings/types";
+
+const PREISHARE_DEV_HOSTNAME = "ayiesrtimviebuwbqgqi.supabase.co";
 
 type SampleProperty = {
   title: string;
@@ -35,23 +35,113 @@ function isSampleProperty(value: unknown): value is SampleProperty {
   );
 }
 
+function validateDevSupabaseUrl(
+  value: string | undefined
+): { valid: true; url: URL } | { valid: false; reason: string } {
+  if (!value) {
+    return { valid: false, reason: "SUPABASE_URL is missing." };
+  }
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return { valid: false, reason: "SUPABASE_URL is malformed." };
+  }
+
+  if (
+    url.protocol !== "https:" ||
+    url.hostname !== PREISHARE_DEV_HOSTNAME ||
+    url.username !== "" ||
+    url.password !== "" ||
+    url.port !== "" ||
+    url.pathname !== "/" ||
+    url.search !== "" ||
+    url.hash !== ""
+  ) {
+    return {
+      valid: false,
+      reason: `SUPABASE_URL must be the HTTPS PREIShare-Dev endpoint (${PREISHARE_DEV_HOSTNAME}).`,
+    };
+  }
+
+  return { valid: true, url };
+}
+
+function checkConfiguration(): boolean {
+  const urlResult = validateDevSupabaseUrl(process.env.SUPABASE_URL?.trim());
+  const missingCredentials = [
+    !process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() &&
+      "SUPABASE_SERVICE_ROLE_KEY",
+    !process.env.OPENAI_API_KEY?.trim() && "OPENAI_API_KEY",
+  ].filter((name): name is string => Boolean(name));
+
+  if (urlResult.valid) {
+    console.log("PREIShare-Dev URL: valid.");
+  } else {
+    console.error(`PREIShare-Dev URL: invalid. ${urlResult.reason}`);
+  }
+
+  if (missingCredentials.length === 0) {
+    console.log("Required private credentials: present.");
+  } else {
+    console.error(
+      `Missing required configuration: ${missingCredentials.join(", ")}.`
+    );
+  }
+
+  const valid = urlResult.valid && missingCredentials.length === 0;
+  if (valid) {
+    console.log("Configuration check passed. No external services were contacted.");
+  } else {
+    console.error("Configuration check failed. No external services were contacted.");
+  }
+  return valid;
+}
+
 async function main() {
   if (typeof window !== "undefined") {
     throw new Error("This seed script can only run in a server-side Node.js environment.");
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL?.trim();
+  const args = process.argv.slice(2);
+  if (args.length > 0) {
+    if (args.length === 1 && args[0] === "--check") {
+      if (!checkConfiguration()) {
+        process.exitCode = 1;
+      }
+      return;
+    }
+
+    throw new Error("Unsupported argument. Use --check to validate configuration only.");
+  }
+
+  const configuredSupabaseUrl = process.env.SUPABASE_URL?.trim();
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
   const openAiApiKey = process.env.OPENAI_API_KEY?.trim();
+  const urlResult = validateDevSupabaseUrl(configuredSupabaseUrl);
+  if (!urlResult.valid) {
+    throw new Error(`Refusing to seed. ${urlResult.reason} No requests were made.`);
+  }
+  const supabaseUrl = urlResult.url.origin;
+
   const missingConfiguration = [
-    !supabaseUrl && "SUPABASE_URL",
     !serviceRoleKey && "SUPABASE_SERVICE_ROLE_KEY",
     !openAiApiKey && "OPENAI_API_KEY",
   ].filter((name): name is string => Boolean(name));
 
-  if (!supabaseUrl || !serviceRoleKey || !openAiApiKey) {
+  if (missingConfiguration.length > 0) {
     throw new Error(`Missing required server environment variable(s): ${missingConfiguration.join(", ")}.`);
   }
+
+  if (!serviceRoleKey || !openAiApiKey) {
+    throw new Error("Required private server configuration is unavailable.");
+  }
+
+  const [{ createClient }, { generatePropertyEmbedding }] = await Promise.all([
+    import("@supabase/supabase-js"),
+    import("../src/lib/embeddings/generate"),
+  ]);
 
   const client = createClient(supabaseUrl, serviceRoleKey, {
     auth: {
@@ -86,6 +176,7 @@ async function main() {
     }
 
     const { data: existingProperties, error: lookupError } = await client
+      .schema("public")
       .from("properties")
       .select("id")
       .eq("title", property.title)
@@ -133,13 +224,16 @@ async function main() {
       continue;
     }
 
-    const { error: insertError } = await client.from("properties").insert({
-      title: property.title,
-      description: property.description,
-      location: property.location,
-      price_usd: property.price_usd,
-      embedding,
-    });
+    const { error: insertError } = await client
+      .schema("public")
+      .from("properties")
+      .insert({
+        title: property.title,
+        description: property.description,
+        location: property.location,
+        price_usd: property.price_usd,
+        embedding,
+      });
 
     if (insertError) {
       failedCount += 1;
