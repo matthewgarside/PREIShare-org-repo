@@ -25,65 +25,60 @@ separates them from tests blocked by the current local and database setup.
   The login route uses Supabase password sign-in and passes the returned
   session to the server session helper. No credentials were entered, so a
   signed-in session has not been verified.
-- Configuration presence was checked without printing values:
-  `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` were configured. The
-  server-side `OPENAI_API_KEY` was missing. The application can use the Vite
-  Supabase settings as fallbacks for its server Supabase client, but that does
-  not provide the missing OpenAI key.
-- The expected Supabase project could not be independently confirmed because
-  no expected project identifier is documented in the checked files. No
-  credential values were printed or recorded.
-- A read-only REST request to the configured endpoint returned HTTP 404 with
-  `PGRST205` for `public.properties`. This proves the configured endpoint did
-  not expose that table in its schema cache; it does not distinguish a wrong
-  project from an unapplied migration or an unexposed schema.
-- No migration, seed script, database write, or OpenAI embedding request was
-  performed.
+- The seed script's no-network `--check` mode passed. It confirmed the
+  configured URL matched the fixed PREIShare-Dev host and that the required
+  server-side credential variables were present. No credential values were
+  printed or recorded.
+- The PREIShare-Dev project reference `ayiesrtimviebuwbqgqi` was supplied for
+  the seed-script safeguard.
+- The guarded seed script was run against PREIShare-Dev. All eight embedding
+  requests returned the generator's generic `PROVIDER_ERROR`; no sample rows
+  were inserted. The existing embedding helper does not expose the HTTP
+  status or provider error body, so the exact cause is unknown.
+- A separate read-only count check against the guarded development endpoint
+  succeeded. It did not expose credential values.
+- No migration or database schema change was performed. No semantic ranking
+  query reached `match_properties`, and no live ranking refinement was possible.
 
 ## Database Data Checks
 
-I made read-only count requests against the configured Supabase endpoint for
+I made read-only count requests against the verified PREIShare-Dev endpoint for
 `public.properties`: total rows, rows with `embedding IS NULL`, and rows with
-`embedding IS NOT NULL`. All three requests returned HTTP 404 with PostgREST
-error code `PGRST205` (the requested table was not found in the schema cache).
-Therefore, the actual counts could not be retrieved.
+`embedding IS NOT NULL`. The requests succeeded and returned the following
+counts after the failed seed attempt.
 
 | Check | Result | Notes |
 |---|---|---|
-| Total properties | NOT AVAILABLE | HTTP 404, `PGRST205`; no count returned. |
-| Non-null embeddings | NOT AVAILABLE | HTTP 404, `PGRST205`; no count returned. |
-| Missing embeddings | NOT AVAILABLE | HTTP 404, `PGRST205`; no count returned. |
-| Database sample data check | BLOCKED | The expected table is unavailable through the configured project's PostgREST schema cache. This does not prove whether the table is absent, its migration was not applied, or the configured project is not the intended project. |
-| Sample JSON count | 8; database presence NOT VERIFIED | The requirements do not prescribe a row count. The checked-in JSON has eight varied entries, but this does not show what is stored in the database. |
-| Embedding dimension in deployed database | NOT VERIFIED | Source SQL expects 1536 dimensions, but the live table could not be queried. |
+| Total properties | FAIL: 0 | Read-only count from PREIShare-Dev after the seed attempt. Expected demonstration set: 8. |
+| Non-null embeddings | FAIL: 0 | No rows have an embedding. |
+| Missing embeddings | FAIL: 0 rows | Zero is the observed null-embedding count, but the expected eight embedded sample rows are absent. |
+| Database sample data check | FAIL | No sample rows were inserted because embedding generation failed for all eight samples. |
+| Sample JSON count | PASS: 8 | Eight fictional entries were validated by the seed script before processing. |
+| Embedding dimension in deployed database | NOT RE-QUERIED | Setup verification previously confirmed the `vector(1536)` schema; this count check only measured row counts. |
 
-The relevant source files do not describe the same data model: the embedding
-data model document describes `public.property_listings` with `summary` and a
-proposed embedding field, while the search migration and seed script use
-`public.properties` with `description`. The project team should confirm which
-table is intended and verify that the expected migrations are installed in
-the intended Supabase project.
+The relevant source files also describe `public.property_listings` with
+`summary`, while this assignment intentionally targets `public.properties`
+with `description`. PREIShare-Dev is the confirmed target for this
+demonstration; the sponsor-owned `property_listings` model is not being changed.
 
 ## Natural-Language Query Results
 
-The requirements give five example queries. Four representative queries are
-listed here. The first was submitted through the real local UI and API. The
-remaining searches were not sent because the first request established that
-the local browser session was unauthenticated, while the embedding key and
-database table were also unavailable. No property ranking or distance score
-was returned for any query.
+The following four requirement queries were selected. None produced a ranking:
+the seed attempt failed to generate embeddings, leaving no properties to rank.
+The earlier UI attempt for “cabin near water” also stopped at authentication.
+No result titles or distance values are fabricated.
 
 | Query | Actual top three property titles and distances | Sensible neighbors? | Pass/Fail/Blocked | Explanation |
 |---|---|---|---|---|
-| “cabin near water” | No results; API returned HTTP 401 with `{"error":"Sign in before searching properties."}` | Not evaluated | BLOCKED | The request reached the local API but stopped at authentication before embedding or database matching. |
-| “downtown condo walkable to restaurants” | Not returned | Not evaluated | BLOCKED | Search was not run after the authentication and setup blockers were established. |
-| “small apartment building with rental income” | Not returned | Not evaluated | BLOCKED | Search was not run after the authentication and setup blockers were established. |
-| “quiet rural place for weekend getaways” | Not returned | Not evaluated | BLOCKED | Search was not run after the authentication and setup blockers were established. |
+| “cabin near water” | No top-three results or distances returned | NO — no sensible neighbor was returned | FAIL | The live seed attempt failed; no property rows exist to rank. A prior local UI attempt also returned HTTP 401 before search. |
+| “family-friendly home close to good schools” | No top-three results or distances returned | NO — no sensible neighbor was returned | FAIL | No matching request reached ranking because there are no seeded rows and embedding generation failed. |
+| “small apartment building with rental income” | No top-three results or distances returned | NO — no sensible neighbor was returned | FAIL | No matching request reached ranking because there are no seeded rows and embedding generation failed. |
+| “quiet rural place for weekend getaways” | No top-three results or distances returned | NO — no sensible neighbor was returned | FAIL | No matching request reached ranking because there are no seeded rows and embedding generation failed. |
 
 The source sample file suggests possible expected matches—such as
-`Lakeside Wooden Retreat`, `Downtown City Loft`, `Rental Income Duplex`, and
+`Lakeside Wooden Retreat`, `Suburban Family Home`, `Rental Income Duplex`, and
 `Rural Farmhouse`—but these are expectations from the JSON, not observed
-search results. The actual result order and distances remain unknown.
+search results. There are no live top-three titles or distances to report.
 
 ## Keyword-Trap Test
 
@@ -102,40 +97,39 @@ sample JSON: it contains eight properties and produces zero exact all-token
 matches. The expected lakeside listing uses “wooden” and “vacation home,” not
 “timber” and “getaway.”
 
-**Actual semantic result:** NOT AVAILABLE. The real search request could not
-reach embedding generation or the database. The semantic rank and distance
-for `Lakeside Wooden Retreat` are unknown.
+**Actual semantic result:** No result. The seed attempt could not generate
+sample embeddings, and the query itself was not ranked. No semantic rank or
+distance for `Lakeside Wooden Retreat` exists in this run.
 
-**Did semantic search beat the keyword trap? NOT EVALUABLE.** The baseline
-comparison indicates why a paraphrase can be useful, but without an actual
-semantic result it would be incorrect to claim that semantic search found a
-listing that keyword matching missed.
+**Did semantic search beat the keyword trap? NO.** The sample JSON has zero
+exact all-token keyword matches under the stated baseline, but semantic search
+also returned no result because embedding generation failed and the database
+contains no rows. This is a failed demonstration, not evidence that semantic
+matching is worse than keyword matching.
 
 ## Refinement Cycle
 
 **Live ranking refinement:** BLOCKED. No live result or distance was returned,
-so there is no evidence-based weak ranking to investigate and no honest
+so there is no evidence-based weak top result to investigate and no honest
 before-and-after ranking comparison to record.
 
-**Confirmed issue considered:** The helper calls `match_properties` after
-checking for an authenticated user. The checked-in migration explicitly
-revokes function execution from `authenticated` (and other API roles), and
-states that the `properties` table has no authenticated grants or row-level
-security policies in its creation migration. If that migration reflects the
-deployed database, the app's authenticated RPC request is expected to be
-denied.
+**Access check:** The development setup was separately verified to grant
+`authenticated` EXECUTE on `match_properties`. An actual authenticated RPC call
+has not been made, so end-to-end function access remains unverified. Older
+canonical migration text revokes that grant; do not replay or assume those
+migrations describe the manually configured development database.
 
-**Decision:** No code or SQL correction was made. Changing database access
-without an approved visibility and authorization design would not be safe, and
-the task does not permit migration changes. The live request was unauthenticated
-and the table was not found in the endpoint schema cache, so the RPC permission
-issue could not be confirmed by an authenticated runtime call.
+**Decision:** Keep the existing cosine-distance ranking unchanged until a
+successful baseline ranking exists. Changing the ranking without observed
+results would be speculative. The current blockers are provider embedding
+failures, zero stored rows, and no authenticated search result.
 
-**Re-test:** NOT RUN. First confirm the intended Supabase project, the
-`public.properties` schema and sample data, the approved access policy for
-`match_properties`, an authenticated local test session, and server-side
-embedding configuration. Then record original ranking results before deciding
-on a ranking refinement.
+**Re-test:** FAIL / BLOCKED. The project and table are confirmed, and the
+read-only count succeeded, but all eight seed embeddings failed with
+`PROVIDER_ERROR`; no baseline ranking was available to refine or re-test.
+Resolve the OpenAI provider failure, seed the fictional samples, then record
+baseline rankings before changing a ranking input and comparing the same
+query again.
 
 **Migration history caution:** Two files use the `20250321000000` migration
 version: `20250321000000_property_listings.sql` and
@@ -169,11 +163,11 @@ message was not reproduced and cannot be diagnosed from this evidence.
 
 | Requirement or success criterion | Status | Evidence |
 |---|---|---|
-| “cabin near water” returns a relevant lakeside listing without the word “cabin” | BLOCKED | The real UI/API request returned 401 before embedding generation and matching. |
-| A meaning-appropriate sample appears for every documented query | BLOCKED | No semantic result set was returned. |
-| Relevant listings rank ahead of less relevant listings | BLOCKED | No actual ranking or distance values were returned. |
-| Directly worded matches appear | BLOCKED | No actual search result was returned. |
-| The farmland contrast avoids cabins or condos as strong matches when no farmland exists | BLOCKED | No semantic query was run; additionally, the sample JSON includes a Rural Farmhouse described as surrounded by working farmland, so the stated no-farmland condition does not hold for this sample set. |
+| “cabin near water” returns a relevant lakeside listing without the word “cabin” | FAIL | No rows or embeddings exist after all eight seed embedding requests failed; the earlier UI/API request also returned 401 before matching. |
+| A meaning-appropriate sample appears for every documented query | FAIL | No semantic result set was returned. |
+| Relevant listings rank ahead of less relevant listings | FAIL | No actual ranking or distance values were returned. |
+| Directly worded matches appear | FAIL | No actual search result was returned. |
+| The farmland contrast avoids cabins or condos as strong matches when no farmland exists | FAIL | No semantic query was ranked; the sample JSON includes a Rural Farmhouse described as surrounded by working farmland, so the stated no-farmland condition does not hold for this sample set. |
 | The team reviews examples against an agreed relevance list and records pass/fail | BLOCKED | No result set or agreed review list was available. |
 | Search page and API routes are registered | PASS | Both paths appear in the generated route tree; `/search` loaded in the browser. |
 | Empty and invalid requests are rejected safely | PASS | Empty query and invalid limit returned HTTP 400; blank UI input showed a validation alert. |
@@ -181,27 +175,25 @@ message was not reproduced and cannot be diagnosed from this evidence.
 
 ## Remaining Limitations
 
-- The configured Supabase endpoint did not expose `public.properties` in its
-  schema cache (`PGRST205`). The expected project identity is not documented,
-  so the intended target could not be confirmed.
-- Database row counts, sample presence, embedding nullability, and deployed
-  vector dimensions remain unknown.
-- `OPENAI_API_KEY` was not configured in the environment checked. No paid
-  embedding request was made.
+- The PREIShare-Dev endpoint is confirmed and `public.properties` is readable
+  for the server-side count check. Current counts are 0 properties, 0
+  non-null embeddings, and 0 null embeddings.
+- All eight seed embedding requests returned `PROVIDER_ERROR`. The key's
+  presence was confirmed without printing it, but the helper masks the
+  provider's status/reason; the provider failure needs diagnosis before
+  seeding can succeed.
 - The browser had no authenticated session. The API's 401 response is the
   observed reason the real query stopped before embedding generation.
-- The migration revokes the app's authenticated role from calling
-  `match_properties`. This is a source-level permission conflict; the deployed
-  RPC permissions could not be tested because the request was unauthenticated
-  and the table was not found in the schema cache.
+- Although setup previously confirmed authenticated RPC execute permission,
+  a successful authenticated `match_properties` call has not been verified.
 - The two `20250321000000` migration files have a version collision, and one
   identifies itself as an assignment-only draft. Do not apply the full
   migration history until this conflict is resolved.
-- The data model document and search implementation use different table and
-  description-field names (`property_listings`/`summary` versus
-  `properties`/`description`). Confirm the intended schema.
-- No semantic top-three results, numeric distances, keyword-trap outcome, or
-  live refinement/re-test can be reported yet.
+- This demonstration intentionally uses `properties`/`description`, not the
+  sponsor-owned `property_listings`/`summary` model.
+- No semantic top-three results, numeric distances, or valid live
+  refinement/re-test can be reported because no embeddings or property rows
+  were created. The keyword-trap semantic result is NO for this run.
 - The UI error state and blank-query state were observed. Loading,
   successful-results, and empty-results behavior were not exercised in a
   successful search session.
@@ -210,18 +202,17 @@ message was not reproduced and cannot be diagnosed from this evidence.
 
 The local `/search` page loads, the generated route tree contains both search
 routes, TypeScript checking passes, and empty/invalid API requests are
-rejected. The natural-language request was attempted through the actual UI but
-stopped at the sign-in check. The configured database endpoint also returned
-`PGRST205` for the expected properties table, and the embedding API key was
-missing. Therefore, database readiness, semantic rankings, the keyword-trap
-outcome, and a live refinement cycle are still blocked; semantic search has
-not been shown to pass end-to-end.
+rejected. The development database is confirmed and returned actual zero row
+counts. The guarded seed attempt failed on all eight embedding requests with
+`PROVIDER_ERROR`, so no properties were inserted and no live ranking could be
+measured. This verification therefore FAILS the end-to-end semantic-search
+demonstration; no ranking refinement is claimed.
 
-To continue, confirm locally that the intended Supabase project is configured
-and determine why `public.properties` is not exposed. Resolve the migration
-version collision before applying migrations; confirm the correct schema and
-agree on safe RPC/table permissions before enabling search. Sign in with a
-local test account and configure the server-side `OPENAI_API_KEY` without
-sharing its value. Then rerun the documented queries and add their real
-top-three titles and cosine distances before treating this verification as
-complete.
+Next, diagnose the OpenAI provider error without exposing the key, then rerun
+the guarded seed. Confirm all eight rows have non-null 1536-dimensional
+embeddings. Sign in with an authorized development test account, run at least
+three requirement queries plus the keyword trap, and record each actual top
+three titles/IDs and cosine distances. Only after capturing a real baseline
+should a weak top result be refined and the same query re-tested. Do not
+resolve the migration timestamp conflict by replaying the full history; the
+development database setup has already been performed separately.
