@@ -30,16 +30,21 @@ This draft does not assume that the target is `main`.
 
 ## 3. Proposed CI check order
 
-The proposed check order is:
+The proposed pipeline stages should run in this order:
 
-1. **Install dependencies — `npm ci`.** This uses the committed npm lockfile
-   to install the project's dependency versions in the clean CI environment.
-   The typecheck and build need those dependencies, so installation comes
-   first.
-2. **Typecheck — `npm run typecheck`** (runs `tsc --noEmit`). This checks
-   TypeScript without producing build output. It should run before the build
-   so a TypeScript problem can be reported directly before building the app.
-3. **Build — `npm run build`** (runs `vite build`). This checks that the app
+1. **Checkout repository.** GitHub Actions retrieves the pull request's code
+   so the runner can access the project files.
+2. **Set up Node.js.** Configure Node.js before running npm commands. The
+   exact Node.js version still needs to be selected and verified for
+   compatibility with the project's dependencies and build tools.
+3. **Install dependencies — `npm ci`.** This uses the existing
+   `package-lock.json` to install the project's dependency versions. The
+   typecheck and build need these dependencies, so installation comes before
+   those checks.
+4. **Typecheck — `npm run typecheck`** (runs `tsc --noEmit`). This checks
+   TypeScript without producing build output. Running it before the build
+   makes TypeScript problems clear before building the app.
+5. **Build — `npm run build`** (runs `vite build`). This checks that the app
    can be built after the TypeScript check passes. We still need to confirm
    that it works in a clean environment without private Supabase credentials
    before relying on it as a credential-free PR check.
@@ -47,10 +52,20 @@ The proposed check order is:
 The exact script names in the current `package.json` are `typecheck` and
 `build`, with commands `tsc --noEmit` and `vite build`. `npm ci` is the
 proposed npm lockfile-based install command; it is not a `package.json`
-script. The project does not define scripts for linting or testing, so the
+script. Checkout and Node.js setup are workflow setup stages, not package
+scripts. The project does not define scripts for linting or testing, so the
 workflow should not include commands for those checks yet.
 
-## 4. Checks not ready for automation
+## 4. Dependency Caching Intent
+
+GitHub Actions should cache npm dependency downloads to make future runs
+faster. The cache key should be based on `package-lock.json`, so a lockfile
+change can use a different cache. Caching does not
+replace running `npm ci` on every workflow run. Do not cache build output in
+a way that could hide problems or make a build look successful using
+outdated files; every pull request should still receive a fresh build.
+
+## 5. Checks not ready for automation
 
 Linting and testing were identified as missing, and that is still accurate:
 the current `package.json` has no `lint` or test script, and the inventory
@@ -61,7 +76,7 @@ verify the appropriate project scripts, and only then include them in CI.
 This draft does not invent commands such as `npm run lint` or `npm test`.
 Missing checks should be described as gaps, not treated as passing checks.
 
-## 5. Environment and dependency requirements
+## 6. Environment and dependency requirements
 
 - **Package manager and lockfile:** The project uses npm and has
   `package-lock.json`; the inventory found no pnpm or Yarn lockfile. The
@@ -84,7 +99,7 @@ Missing checks should be described as gaps, not treated as passing checks.
   a separate safe test plan. No real credentials or secret values belong in
   this document or in an ordinary PR workflow.
 
-## 6. Failure policy
+## 7. Failure policy
 
 If dependency installation, typechecking, or an enabled build check fails,
 the workflow should report that failure on the PR with a failing status and
@@ -99,7 +114,7 @@ is correct. If passing checks must be required before merging, the repository
 rules must be configured to require them; creating a workflow alone does not
 set that policy.
 
-## 7. Human review responsibilities
+## 8. Human review responsibilities
 
 Reviewers still need to check code quality, functionality, security, and
 whether the change meets the project's requirements. They should consider
@@ -111,7 +126,7 @@ AI-assisted reviews can help point out possible issues, but AI can miss
 problems or be mistaken. People remain responsible for approving and merging
 PRs.
 
-## 8. Out of scope
+## 9. Out of scope
 
 This proposed PR pipeline does not include:
 
@@ -126,7 +141,7 @@ This proposed PR pipeline does not include:
 
 No YAML files or GitHub Actions workflows are part of this design draft.
 
-## 9. Success criteria
+## 10. Success criteria
 
 The design will be successful when the team can implement it so that:
 
@@ -134,9 +149,9 @@ The design will be successful when the team can implement it so that:
   environment, rather than relying on each teammate to remember them.
 - Opening, updating, and reopening PRs triggers checks, and new commits cause
   the checks to run again.
-- `npm ci`, `npm run typecheck`, and `npm run build` run in that order, with
-  the build included only after confirming that it works without private
-  Supabase credentials.
+- Checkout, Node.js setup, `npm ci`, `npm run typecheck`, and
+  `npm run build` run in that order, with the build included only after
+  confirming that it works without private Supabase credentials.
 - The PR clearly shows which checks passed or failed, and a failure helps the
   author know what needs fixing before merge.
 - The checks reduce repeated manual setup and basic build checking, leaving
