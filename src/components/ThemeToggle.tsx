@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 
 type ThemeMode = 'light' | 'dark' | 'auto'
+
+const themeListeners = new Set<() => void>()
 
 function getInitialMode(): ThemeMode {
   if (typeof window === 'undefined') {
@@ -13,6 +15,29 @@ function getInitialMode(): ThemeMode {
   }
 
   return 'auto'
+}
+
+function getServerMode(): ThemeMode {
+  return 'auto'
+}
+
+function subscribeToTheme(onChange: () => void) {
+  themeListeners.add(onChange)
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === 'theme' || event.key === null) {
+      onChange()
+    }
+  }
+
+  window.addEventListener('storage', onStorage)
+  return () => {
+    themeListeners.delete(onChange)
+    window.removeEventListener('storage', onStorage)
+  }
+}
+
+function notifyThemeListeners() {
+  themeListeners.forEach((listener) => listener())
 }
 
 function applyThemeMode(mode: ThemeMode) {
@@ -32,13 +57,15 @@ function applyThemeMode(mode: ThemeMode) {
 }
 
 export default function ThemeToggle() {
-  const [mode, setMode] = useState<ThemeMode>('auto')
+  const mode = useSyncExternalStore(
+    subscribeToTheme,
+    getInitialMode,
+    getServerMode,
+  )
 
   useEffect(() => {
-    const initialMode = getInitialMode()
-    setMode(initialMode)
-    applyThemeMode(initialMode)
-  }, [])
+    applyThemeMode(mode)
+  }, [mode])
 
   useEffect(() => {
     if (mode !== 'auto') {
@@ -57,9 +84,9 @@ export default function ThemeToggle() {
   function toggleMode() {
     const nextMode: ThemeMode =
       mode === 'light' ? 'dark' : mode === 'dark' ? 'auto' : 'light'
-    setMode(nextMode)
     applyThemeMode(nextMode)
     window.localStorage.setItem('theme', nextMode)
+    notifyThemeListeners()
   }
 
   const label =
