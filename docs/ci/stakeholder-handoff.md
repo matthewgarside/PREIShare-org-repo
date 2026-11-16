@@ -16,7 +16,10 @@ people.
 
 We created a GitHub Actions workflow named **PR CI**. It is configured to run
 for pull requests targeting the proposed `main` branch when they are opened,
-updated with new commits, or reopened. Its one job is named **ci**.
+updated with new commits, or reopened. The workflow file,
+[`.github/workflows/pr-ci.yml`](../../.github/workflows/pr-ci.yml), defines
+the automated checks that run on those pull requests. It runs one job named
+**ci**.
 
 The workflow runs these steps in order:
 
@@ -75,20 +78,32 @@ of questions. AI suggestions need to be checked by a person. AI cannot approve
 or merge a pull request, and it does not take away the human reviewers'
 responsibility.
 
+People also remain responsible for handling secrets and environments safely.
+Reviewers and maintainers need to decide which environment variables are
+appropriate for CI and check whether a change uses them safely. They must make
+sure private Supabase credentials and other secret values are not exposed, and
+decide how checks that depend on services should be tested safely. Production
+credentials and sensitive data should stay out of pull request workflows
+unless a secure approach has been explicitly reviewed and approved.
+
 ## 5. Branch Protection and Maintainer Responsibilities
 
 The workflow is configured for pull requests targeting `main`, which is the
-proposed branch to protect. Maintainers should:
+proposed branch to protect. Maintainers and repository administrators should
+use the [branch protection checklist](branch-protection-checklist.md) to
+confirm which branches need protection and configure the intended rules.
+They should:
 
 - Confirm which branches need protection and whether `main` is the right
   target.
-- Identify the actual required status check for the **ci** job. GitHub may
-  show it as **PR CI / ci**.
+- Require the actual **ci** status check from the **PR CI** workflow. GitHub
+  may show it as **PR CI / ci**.
 - Decide whether a pull request branch must be up to date with its target
   branch before merging.
-- Consider requiring human approval.
+- Require human review and approval according to the team's agreed policy.
 - Verify that a failed required check prevents merging.
 
+Passing CI does not automatically approve or merge a pull request.
 **Branch protection has not been confirmed as enabled.** The checklist is
 guidance; it does not change repository settings. A maintainer with the
 necessary permissions needs to check and configure those settings. Contributors
@@ -108,6 +123,15 @@ and recommendations.
 - Earlier `npm ci` output reported 15 dependency vulnerabilities and
   install-script warnings for `esbuild` and `fsevents`. These warnings need
   further investigation; they were not resolved as part of the verification.
+- Tests can sometimes fail inconsistently, which can make CI results harder
+  to trust. This is a potential risk, not a claim that the current three
+  listing validation tests are flaky. Maintainers should investigate and
+  stabilize unreliable tests before making them required checks.
+- Local commands and GitHub Actions commands need to stay consistent. If a
+  script in `package.json` changes without a matching workflow or
+  documentation update, developers and GitHub Actions could run different
+  checks. The [CI scripts notes](ci-scripts-notes.md) help teammates reproduce
+  the same checks locally; script drift has not been reported.
 
 ## 7. Recommended Next Steps
 
@@ -131,3 +155,20 @@ a successful run on a real GitHub pull request has not been confirmed.
 Maintainers still need to verify the workflow on GitHub and decide and confirm
 the branch protection and review settings before treating CI as an enforced
 merge requirement.
+
+## Sprint 6 Artifact Index
+
+- [PR Pain and Goals](pr-pain-and-goals.md) — Explains the original pull
+  request problems and CI goals.
+- [Pipeline Design](pipeline-design.md) — Documents the planned CI stages,
+  order, and failure policy.
+- [PR CI Workflow](../../.github/workflows/pr-ci.yml) — Contains the actual
+  GitHub Actions workflow.
+- [CI Scripts Notes](ci-scripts-notes.md) — Lists the commands developers can
+  run locally.
+- [Branch Protection Checklist](branch-protection-checklist.md) — Helps
+  maintainers configure required checks and human review.
+- [AI PR Review Prompts](ai-pr-review-prompts.md) — Contains the
+  AI-assisted review prompts.
+- [E2E Verification Log](e2e-verification-log.md) — Records what passed and
+  what still needs verification.
