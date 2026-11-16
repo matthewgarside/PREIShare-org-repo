@@ -8,10 +8,11 @@ catch problems before broken code reaches a protected branch.
 
 ## 2. Branches to protect
 
-The PREIShare team still needs to confirm which branches need protection.
-The CI design document also says that pull request target branches have not
-been decided yet. Do not assume that `main` is the only branch to protect.
-Maintainers should agree on the intended branches before creating rules.
+The current workflow uses `main` as the proposed pull request target and
+branch to protect for this assignment. The CI design document leaves the
+target branch or branches undecided, so maintainers must confirm whether
+`main` is correct and whether any other branches need protection before
+creating rules. Do not treat this proposal as a confirmed team decision.
 
 ## 3. Required status checks
 
@@ -44,7 +45,9 @@ approval before merging.
 
 AI-assisted code reviews can help point out possible problems, but they can
 miss things or be wrong. AI reviews must not replace human approval or make
-merge decisions.
+merge decisions. They must not approve or automatically merge pull requests.
+The team still needs to decide the exact human approval policy, such as how
+many approvals to require.
 
 ## 6. How maintainers configure protection
 
@@ -68,7 +71,19 @@ permissions and configuration. A maintainer with the needed access should
 confirm the choices in GitHub; this checklist does not change repository
 settings.
 
-## 7. Learner responsibilities and limitations
+## 7. What Not to Require Yet
+
+- **Deployment or production jobs:** The current CI pipeline checks code
+  quality and builds the app. It does not deploy the application, so do not
+  require deployment checks here.
+- **Flaky or optional checks:** Do not require checks that are experimental
+  or unreliable until they have been tested and work consistently.
+- **Secrets in the PR workflow:** Do not add private Supabase credentials,
+  production keys, or other secrets just to make a required check pass.
+  Checks that need private services should be designed and reviewed
+  separately.
+
+## 8. Learner responsibilities and limitations
 
 Students and contributors without repository administrator permissions can
 prepare this checklist and help verify the intended rules. They may not have
@@ -78,7 +93,7 @@ maintainer to review and apply the agreed settings.
 This document is a guide only. It does not mean branch protection has already
 been configured.
 
-## 8. Verification checklist
+## 9. Verification checklist
 
 After a maintainer applies the rules, confirm:
 
