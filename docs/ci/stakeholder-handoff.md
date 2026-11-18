@@ -186,8 +186,24 @@ decisions.
 ### What the AI Can and Cannot Do
 
 The AI Review Assistant can summarize changes, suggest findings, identify
-possible risks, and ask questions. These suggestions help people focus their
-review, but the AI cannot:
+possible risks, and ask questions. Possible findings must follow the required
+format in [AI PR Review Prompts](ai-pr-review-prompts.md). Every finding must
+use exactly these four fields:
+
+- **Severity:** Use only `critical`, `high`, `medium`, or `low`.
+- **Evidence:** Identify actual supporting code or supplied information and
+  distinguish confirmed evidence from uncertainty or inference.
+- **Category:** Use only `sign-in`, `money`, `privacy`, `product intent`, or
+  `other`.
+- **Question for human reviewer:** Ask a specific question for a person to
+  investigate.
+
+Findings need supporting code evidence or a quote from the supplied change.
+When the supplied information does not support a finding, the assistant must
+report `not-found` instead of inventing an issue. These findings are advisory
+only and do not replace CI or the [Human Judgment Checklist](human-judgment-checklist.md).
+
+The AI cannot:
 
 - Approve pull requests.
 - Merge pull requests.
@@ -201,17 +217,48 @@ names defined in [PR Approval Roles](pr-approval-roles.md).
 
 ### Why Human Review Still Matters
 
-People must still evaluate sign-in and authorization, money and financial
-behavior, privacy and member information, and product intent and requirements.
-[Human Judgment Checklist](human-judgment-checklist.md) gives human reviewers
-a process for investigating those areas and recording a Pass, Fail, or Needs
-Info result.
+Human reviewers must evaluate these areas separately:
+
+- **Sign-in:** A human needs to check whether authentication and authorization
+  work as intended and whether users can access information they should not
+  see. Passing automated checks does not prove access rules are correct.
+- **Money:** A human needs to review prices, calculations, and financial
+  behavior because incorrect amounts or business logic could affect users and
+  transactions, even if the code builds successfully.
+- **Privacy:** A human needs to check whether personal information is being
+  shared appropriately and whether members have authorized that sharing. Our
+  planted email and phone example showed how a privacy problem could pass CI.
+- **Product intent:** A human needs to determine whether a proposed change
+  actually matches PREIShare's requirements and intended behavior. Working
+  code is not necessarily the correct feature.
+
+Human reviewers use [Human Judgment Checklist](human-judgment-checklist.md)
+to evaluate these areas before deciding whether a pull request is acceptable.
+The checklist gives them a process for recording a Pass, Fail, or Needs Info
+result.
 
 A passing CI check does not automatically mean a pull request is safe or
 acceptable. [AI Review Orchestration](ai-review-orchestration.md) shows that
 CI, AI advice, human judgment, approval, and merging are separate steps.
 Each step needs its own responsible action rather than being treated as the
 same as the others.
+
+### Topic 2 Reading Paths
+
+- `docs/ci/ai-pr-review-prompts.md` — Contains the standing AI review rules,
+  task prompts, and required output shapes.
+- `docs/ci/ai-review-overlay-brief.md` — Explains the goals and scope of the
+  AI Review Overlay.
+- `docs/ci/samples/README.md` — Documents the planted privacy teaching
+  sample, its pull request, and its CI evidence.
+
+Other useful Topic 2 references are
+`docs/ci/human-judgment-checklist.md`,
+`docs/ci/ai-review-orchestration.md`,
+`docs/ci/pr-approval-roles.md`,
+`docs/ci/branch-protection-checklist.md`,
+`docs/ci/sample-pr-review/ai-findings.md`, and
+`docs/ci/sample-pr-review/critique-and-prompt-revision.md`.
 
 ### Sample Pull Request and AI Review
 
@@ -279,6 +326,33 @@ should continue reviewing important changes and improving test coverage.
 
 This handoff does not claim that the app has been fully security tested or that
 all PREIShare problems have been resolved.
+
+### Sprint 7 Next Actions
+
+The existing pull-request CI workflow is already at
+`.github/workflows/pr-ci.yml`, and the AI review prompt pack already exists at
+`docs/ci/ai-pr-review-prompts.md`. The project also already has an existing
+Vercel project and a recorded Production URL:
+https://prei-share-org-repo-five.vercel.app/. Sprint 7 should build on these
+pieces rather than recreate them.
+
+1. Confirm the existing Vercel Production URL and verify that the current
+   deployed application is reachable. Reuse the existing Vercel project;
+   do not create a new hosting project.
+2. Continue using the existing `.github/workflows/pr-ci.yml` workflow for new
+   pull requests and investigate any failing required `ci` checks before
+   merging.
+3. Continue using the existing AI review prompt pack as an advisory review tool
+   without granting AI approval or merge authority.
+4. Have authorized humans follow [Human Judgment Checklist](human-judgment-checklist.md)
+   and [AI Review Orchestration](ai-review-orchestration.md) before making
+   merge decisions.
+5. Maintain the saved branch protection requirements on `main`, including the
+   pull-request requirement, one human approval, and passing `ci`.
+6. Continue improving application functionality and test coverage based on
+   actual Sprint 7 requirements rather than rebuilding completed Sprint 6 or
+   Topic 2 infrastructure.
+7. Keep the intentionally flawed sample privacy pull request open and unmerged.
 
 ### Topic 2 Handoff Summary
 
