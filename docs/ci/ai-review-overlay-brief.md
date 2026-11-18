@@ -78,9 +78,18 @@ This topic does not recreate or replace:
 
 - The existing GitHub Actions workflow.
 - The current CI commands.
+- A second CI design. We will continue using
+  `docs/ci/pipeline-design.md`.
+- A second dashboard inventory. We will use the existing project
+  documentation and inventory instead of duplicating it.
 - The existing AI review prompt pack.
+- A second AI review prompt-pack filename. The existing prompt pack remains
+  `docs/ci/ai-pr-review-prompts.md`.
 - The current branch-protection documentation.
 - The verification work already completed and recorded.
+
+This topic builds on existing PREIShare work rather than recreating files or
+introducing duplicate systems.
 
 The existing production URL also stays as it is; this topic does not create a
 new hosting project.
@@ -90,13 +99,17 @@ new hosting project.
 AI-assisted review should pay attention to these PREIShare areas:
 
 - **Sign-in:** Authentication, user sessions, and access to the right parts
-  of the app.
+  of the app. A green CI check cannot prove that authentication and session
+  handling keep the wrong people out of an account.
 - **Money:** Financial information, listing prices, and related business
-  logic.
+  logic. Passing checks cannot guarantee that prices, calculations, or
+  financial information make sense for the business.
 - **Privacy:** Supabase access, row-level security (RLS), personal
-  information, and secret handling.
+  information, and secret handling. A green check cannot prove these are
+  handled safely in every situation.
 - **Product intent:** Whether a change meets PREIShare's requirements and
-  helps users make better real-estate decisions.
+  helps users make better real-estate decisions. CI cannot guarantee that a
+  change meets those requirements or solves the problem users need solved.
 
 AI can point out possible concerns, but it can miss problems or raise
 incorrect ones. It cannot independently guarantee that code is correct or
@@ -106,12 +119,17 @@ requirements.
 ## 8. Human Review and Merge Authority
 
 - AI is only a review assistant.
-- AI can summarize changes, identify possible risks, and suggest review
-  questions.
+- AI may suggest potential findings, risks, or questions in a pull request
+  review comment. A review comment is feedback for a human reviewer to
+  consider, not a confirmed fact.
+- A review comment is not an approval and does not merge the pull request.
 - AI cannot approve pull requests.
 - AI cannot merge pull requests.
+- AI must never use language suggesting that it approved a pull request or
+  authorized merging.
 - People must verify AI findings.
-- Human reviewers are responsible for approval and merging.
+- Only authorized human reviewers and maintainers can decide whether to
+  approve or merge a pull request.
 - Passing CI does not automatically mean a change is safe or ready to merge.
 
 ## 9. Success Criteria
