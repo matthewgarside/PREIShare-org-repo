@@ -25,7 +25,8 @@ remain open and unmerged.
 
 ## Pull request evidence placeholders
 
-- Pull request URL: `REPLACE_WITH_REAL_PULL_REQUEST_URL`
-- PR status: `REPLACE_WITH_PR_STATUS`
-- GitHub Actions CI result: `REPLACE_WITH_GITHUB_ACTIONS_CI_RESULT`
-- GitHub Actions run link: `REPLACE_WITH_GITHUB_ACTIONS_RUN_LINK`
+- Pull request URL: https://github.com/matthewgarside/PREIShare-org-repo/pull/2
+- PR status: Open
+- Merged: No
+- GitHub Actions CI result: Passed (PR CI / ci)
+- GitHub Actions run link: https://github.com/matthewgarside/PREIShare-org-repo/actions/runs/44249106163/job/134615140963?pr=2
