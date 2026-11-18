@@ -108,15 +108,40 @@ After a maintainer applies the rules, confirm:
 - Repository: `matthewgarside/PREIShare-org-repo` (Public)
 - Protected branch: `main`
 - GitHub settings path: Settings → Branches → Classic branch protection rule
+- Configured by GitHub user `matthewgarside` on 2026-11-18: opened Settings,
+  configured and saved the rule, refreshed the page, and verified the
+  protections remained enabled.
 - Require a pull request before merging: saved
 - Require human approvals: saved
-- Required number of human approvals: 1
+- Required number of human approvals: 1. The roles document does not specify
+  a numeric count; 1 was the assignment default and the number actually
+  configured in GitHub Settings.
 - Require status checks to pass before merging: saved
 - Exact required status check: `ci` (GitHub Actions)
 - Existing CI workflow: `.github/workflows/pr-ci.yml`
-- Verification after refresh: the rule was still listed, and all three requirements remained enabled after reopening it.
+- Verification after refresh: the rule remained listed, and all three
+  requirements remained enabled after reopening it.
 - Payment status: No paid GitHub upgrade was purchased.
 
-The AI Review Assistant is not an approver. Authorized humans make approval
-and merge decisions. The intentionally flawed sample privacy pull request
-must remain open and unmerged.
+The authorized **Human Reviewer** makes approval decisions, and the authorized
+**Repository Maintainer** makes merge decisions. The AI Review Assistant is
+advisory only and cannot approve or merge; an AI review does not count as the
+required human approval.
+
+The required automated status check is `ci`, produced by the existing GitHub
+Actions workflow. The sample AI review notes in
+`docs/ci/sample-pr-review/ai-findings.md` are not a required GitHub status
+check. AI-generated review notes are advisory documentation and do not replace
+CI or human approval.
+
+People must follow `docs/ci/human-judgment-checklist.md` and
+`docs/ci/ai-review-orchestration.md` before deciding whether a pull request
+should be merged. These documents guide human review even if a GitHub branch
+protection setting cannot be saved or enforced; the review process must not be
+bypassed because a technical rule is missing. For this repository, all three
+required protections were successfully saved and verified. A passing CI check
+does not make a privacy issue acceptable, and AI-generated findings are not
+formal approval.
+
+The intentionally flawed sample privacy pull request must remain open and
+unmerged.
