@@ -23,10 +23,12 @@ remain open and unmerged.
 - `docs/ci/samples/sample-pr-body.md`
 - `docs/ci/samples/README.md`
 
-## Pull request evidence placeholders
+## Pull request evidence
 
 - Pull request URL: https://github.com/matthewgarside/PREIShare-org-repo/pull/2
 - PR status: Open
 - Merged: No
+- CI workflow file: `.github/workflows/pr-ci.yml`
 - GitHub Actions CI result: Passed (PR CI / ci)
 - GitHub Actions run link: https://github.com/matthewgarside/PREIShare-org-repo/actions/runs/44249106163/job/134615140963?pr=2
+
