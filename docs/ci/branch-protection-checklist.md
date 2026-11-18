@@ -102,3 +102,21 @@ After a maintainer applies the rules, confirm:
 - [ ] A failed required CI check prevents merging.
 - [ ] The chosen human review requirement works before merging.
 - [ ] AI review does not approve or merge code.
+
+## Enforcement record
+
+- Repository: `matthewgarside/PREIShare-org-repo` (Public)
+- Protected branch: `main`
+- GitHub settings path: Settings → Branches → Classic branch protection rule
+- Require a pull request before merging: saved
+- Require human approvals: saved
+- Required number of human approvals: 1
+- Require status checks to pass before merging: saved
+- Exact required status check: `ci` (GitHub Actions)
+- Existing CI workflow: `.github/workflows/pr-ci.yml`
+- Verification after refresh: the rule was still listed, and all three requirements remained enabled after reopening it.
+- Payment status: No paid GitHub upgrade was purchased.
+
+The AI Review Assistant is not an approver. Authorized humans make approval
+and merge decisions. The intentionally flawed sample privacy pull request
+must remain open and unmerged.
