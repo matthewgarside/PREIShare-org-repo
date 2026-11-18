@@ -172,3 +172,119 @@ merge requirement.
   AI-assisted review prompts.
 - [E2E Verification Log](e2e-verification-log.md) — Records what passed and
   what still needs verification.
+
+## Topic 2: AI Review Overlay and Branch Protection Handoff
+
+### What Topic 2 Added
+
+Topic 2 added an AI-assisted pull request review process alongside the existing
+Sprint 6 CI workflow. CI handles automated technical checks, while AI helps
+identify possible issues and questions for human reviewers to investigate.
+The AI review complements CI; it does not replace CI or make pull request
+decisions.
+
+### What the AI Can and Cannot Do
+
+The AI Review Assistant can summarize changes, suggest findings, identify
+possible risks, and ask questions. These suggestions help people focus their
+review, but the AI cannot:
+
+- Approve pull requests.
+- Merge pull requests.
+- Formally request changes as a GitHub reviewer.
+- Declare PREIShare safe or guarantee security.
+- Replace human judgment.
+
+An authorized **Human Reviewer** makes approval decisions, and an authorized
+**Repository Maintainer** performs the final merge. These are the actual role
+names defined in [PR Approval Roles](pr-approval-roles.md).
+
+### Why Human Review Still Matters
+
+People must still evaluate sign-in and authorization, money and financial
+behavior, privacy and member information, and product intent and requirements.
+[Human Judgment Checklist](human-judgment-checklist.md) gives human reviewers
+a process for investigating those areas and recording a Pass, Fail, or Needs
+Info result.
+
+A passing CI check does not automatically mean a pull request is safe or
+acceptable. [AI Review Orchestration](ai-review-orchestration.md) shows that
+CI, AI advice, human judgment, approval, and merging are separate steps.
+Each step needs its own responsible action rather than being treated as the
+same as the others.
+
+### Sample Pull Request and AI Review
+
+The completed fictional privacy-review teaching example used this sample pull
+request: https://github.com/matthewgarside/PREIShare-org-repo/pull/2. Its
+sample branch was `docs/sample-planted-privacy`, and it targeted `main`.
+The example intentionally included a privacy mistake involving fictional
+member contact information.
+
+The sample pull request was kept open and unmerged. The GitHub Actions
+`PR CI / ci` check passed for the sample. The original AI review identified a
+high-severity privacy concern. It identified the relevant email and phone
+fields but did not name the literal fictional values.
+
+The prompt pack was then revised in place to improve evidence specificity.
+One re-run using the revised prompt named the fictional values and quoted the
+relevant code. The AI did not approve or merge the pull request.
+
+This example demonstrated why automated checks and AI review both need human
+oversight. The passing CI check did not rule on the privacy problem, and the
+AI finding still required a person to verify the code and make review
+decisions. The recorded finding, critique, and revision are available in
+[Sample AI Findings](sample-pr-review/ai-findings.md) and
+[Critique and Prompt Revision](sample-pr-review/critique-and-prompt-revision.md).
+
+### Branch Protection Enforcement
+
+The source of truth for the saved settings is the `Enforcement record` in
+[Branch Protection Checklist](branch-protection-checklist.md). The verified
+facts are:
+
+- Repository: `matthewgarside/PREIShare-org-repo`
+- Visibility: Public
+- Protected branch: `main`
+- Configuration date: `2026-11-18`
+- Configured by: `matthewgarside`
+- GitHub screen: Settings → Branches → Classic branch protection rule
+- Require a pull request before merging: saved
+- Required human approvals: saved
+- Approval count: 1
+- Require passing status checks: saved
+- Exact required check: `ci` (GitHub Actions)
+- Workflow: `.github/workflows/pr-ci.yml`
+- The rule and all three requirements remained enabled after the page was
+  refreshed and reopened in Settings.
+- No paid GitHub upgrade was purchased.
+
+GitHub now enforces the three configured requirements: pull requests before
+merging, one human approval, and a passing required `ci` status check. Review
+procedures, including use of the human judgment checklist and AI review
+runbook, are separate human responsibilities. The AI findings document is not
+a required GitHub status check.
+
+### Responsibilities and Remaining Limitations
+
+GitHub enforces the configured pull-request, approval, and CI requirements,
+while humans still follow [Human Judgment Checklist](human-judgment-checklist.md)
+and [AI Review Orchestration](ai-review-orchestration.md) to evaluate and
+approve changes.
+
+Passing CI does not guarantee complete security, product correctness, or
+releasability. The current automated checks do not cover every possible issue,
+including all Supabase-related behavior or every privacy concern. Maintainers
+should continue reviewing important changes and improving test coverage.
+
+This handoff does not claim that the app has been fully security tested or that
+all PREIShare problems have been resolved.
+
+### Topic 2 Handoff Summary
+
+The team now has the existing automated PR CI workflow, AI-assisted review
+instructions, a human judgment checklist, defined approval and merge
+responsibilities, a completed teaching sample and critique, and saved branch
+protection settings. Together, these pieces help prevent unreviewed or failing
+changes from reaching `main`, while authorized people still make the final
+review and merge decisions.
